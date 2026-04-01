@@ -2,11 +2,11 @@ import { userModel } from "../../database/model/user.model.js";
 
 export const getOwnProfile = async (req, res) => {
   if (req.user) {
-    let user = await userModel.findById(req.user._id);
-    if (!user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (!userFound && !userFound.isActive) {
       return res.status(404).json({ message: "user not found" });
     }
-    res.status(200).json({ message: "user found", data: user });
+    res.status(200).json({ message: "user found", data: userFound });
   } else {
     res.status(400).json({ message: "login first" });
   }
@@ -14,6 +14,10 @@ export const getOwnProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (!userFound && !userFound.isActive) {
+      return res.status(404).json({ message: "user not found" });
+    }
     let { name, phone } = req.body;
     let avatar;
     if (req.file) {
@@ -38,6 +42,10 @@ export const updateProfile = async (req, res) => {
 
 export const softDelete = async (req, res) => {
   if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (!userFound && !userFound.isActive) {
+      return res.status(404).json({ message: "user not found" });
+    }
     let user = await userModel.findByIdAndUpdate(
       req.user._id,
       { isActive: false },
@@ -55,6 +63,10 @@ export const softDelete = async (req, res) => {
 
 export const uploadProfileImage = async (req, res) => {
   if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (!userFound && !userFound.isActive) {
+      return res.status(404).json({ message: "user not found" });
+    }
     let profileImage;
     if (req.file) {
       profileImage = `${env.base_url}/uploads/${req.file.originalname}`;
