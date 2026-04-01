@@ -44,7 +44,8 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
       avatar,
-      role,phone,
+      role,
+      phone,
     });
   }
 
@@ -63,7 +64,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   let { email, password } = req.body;
   let userSearch = await userModel.findOne({ email });
-  if (userSearch) {
+  if (userSearch?.isActive) {
     let data = await bcrypt.compare(password, userSearch.password);
     if (data) {
       if (!userSearch.isVerified) {
@@ -133,7 +134,7 @@ export const verifyEmail = async (req, res) => {
 export const resendVerification = async (req, res) => {
   let { email } = req.body;
   let userFound = await userModel.findOne({ email });
-  if (!userFound) {
+  if (!userFound && !userFound.isActive) {
     return res.status(400).json({ message: "user not found" });
   }
   if (userFound.isVerified) {
@@ -150,7 +151,7 @@ export const resendVerification = async (req, res) => {
 export const forgetPassword = async (req, res) => {
   let { email } = req.body;
   let userFound = await userModel.findOne({ email });
-  if (!userFound) {
+  if (!userFound && !userFound.isActive) {
     return res.json({ message: "user not found" });
   }
   let otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -166,7 +167,7 @@ export const resetPassword = async (req, res) => {
     return res.json({ message: "password not matched" });
   }
   let userFound = await userModel.findOne({ email });
-  if (!userFound) {
+  if (!userFound && !userFound.isActive) {
     return res.json({ message: "user not found" });
   }
   if (otp != userFound.otp) {
