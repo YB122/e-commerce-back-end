@@ -6,6 +6,7 @@ let password = process.env.PASSWORD;
 let hash = process.env.HASH;
 let base_url = process.env.BASE_URL;
 let signatureAdmin = process.env.SIGNATURE_ADMIN;
+let signatureStaff = process.env.SIGNATURE_STAFF;
 let signatureUser = process.env.SIGNATURE_USER;
 let accessToken = process.env.ACCESS_TOKEN;
 let refreshToken = process.env.REFRESH_TOKEN;
@@ -19,6 +20,7 @@ export const env = {
   base_url,
   signatureAdmin,
   signatureUser,
+  signatureStaff,
   accessToken,
   refreshToken,
   databaseUrl,
