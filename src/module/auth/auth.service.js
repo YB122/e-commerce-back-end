@@ -6,7 +6,7 @@ import { env } from "../../../config/env.service.js";
 import { generateToken } from "../../common/middleware/auth.js";
 
 export const signup = async (req, res) => {
-  let { name, email, password, confirmPassword, role } = req.body;
+  let { name, email, password, confirmPassword, role, phone } = req.body;
   let emailSearch = await userModel.findOne({ email });
   if (emailSearch && emailSearch.isActive) {
     return res.status(400).json({ message: "email already exist" });
@@ -31,6 +31,7 @@ export const signup = async (req, res) => {
       {
         name,
         password: hashedPassword,
+        phone,
         avatar,
         role,
         isActive: true,
@@ -43,7 +44,7 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
       avatar,
-      role,
+      role,phone,
     });
   }
 

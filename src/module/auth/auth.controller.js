@@ -21,25 +21,25 @@ import { auth } from "../../common/middleware/auth.js";
 const router = Router();
 
 router.post(
-  "/auth/signup",
+  "/signup",
   validateInput(signupValidate),
-  upload().single("image"),
+  upload().single("avatar"),
   signup,
 );
-router.post("/auth/login", validateInput(loginValidate), login);
-router.get("/auth/verify-email/:token", verifyEmail);
+router.post("/login", validateInput(loginValidate), login);
+router.get("/verify-email/:token", verifyEmail);
 router.post(
-  "/auth/resend-verification",
+  "/resend-verification",
   validateInput(resendVerificationValidate),
   resendVerification,
 );
 router.post(
-  "/auth/forget-password",
+  "/forget-password",
   validateInput(forgotPasswordValidate),
   forgetPassword,
 );
 router.post(
-  "/auth/reset-password",
+  "/reset-password",
   auth,
   validateInput(resetPasswordValidate),
   resetPassword,

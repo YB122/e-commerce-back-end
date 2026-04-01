@@ -1,0 +1,77 @@
+import { userModel } from "../../database/model/user.model.js";
+
+export const getOwnProfile = async (req, res) => {
+  if (req.user) {
+    let user = await userModel.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+    res.status(200).json({ message: "user found", data: user });
+  } else {
+    res.status(400).json({ message: "login first" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  if (req.user) {
+    let { name, phone } = req.body;
+    let avatar;
+    if (req.file) {
+      avatar = `${env.base_url}/uploads/${req.file.originalname}`;
+    }
+    let all = {};
+    name ? (all.name = name) : null;
+    phone ? (all.phone = phone) : null;
+    avatar ? (all.avatar = avatar) : null;
+    let user = await userModel.findByIdAndUpdate(req.user._id, all, {
+      new: true,
+    });
+    if (user) {
+      res.status(200).json({ message: "data updated correct", data: user });
+    } else {
+      res.status(400).json({ message: "data not updated" });
+    }
+  } else {
+    res.status(400).json({ message: "login first" });
+  }
+};
+
+export const softDelete = async (req, res) => {
+  if (req.user) {
+    let user = await userModel.findByIdAndUpdate(
+      req.user._id,
+      { isActive: false },
+      { new: true },
+    );
+    if (user) {
+      res.status(200).json({ message: "user deleted", data: user });
+    } else {
+      res.status(400).json({ message: "user not deleted" });
+    }
+  } else {
+    res.status(400).json({ message: "login first" });
+  }
+};
+
+export const uploadProfileImage = async (req, res) => {
+  if (req.user) {
+    let profileImage;
+    if (req.file) {
+      profileImage = `${env.base_url}/uploads/${req.file.originalname}`;
+      let user = await userModel.findByIdAndUpdate(
+        req.user._id,
+        { profileImage },
+        { new: true },
+      );
+      if (user) {
+        res.status(200).json({ message: "image upload correct", data: user });
+      } else {
+        res.status(400).json({ message: "error in upload image" });
+      }
+    } else {
+      res.status(400).json({ message: "must upload image" });
+    }
+  } else {
+    res.status(400).json({ message: "login first" });
+  }
+};
