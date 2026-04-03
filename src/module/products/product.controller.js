@@ -12,6 +12,8 @@ import {
   getAllProductsAdmin,
   softDeleteProduct,
   updateProduct,
+  getOneProduct,
+  getAllProductsUser,
 } from "./product.service.js";
 
 const router = Router();
@@ -24,6 +26,10 @@ router.delete("/:id", auth, softDeleteProduct);
 router.get("/admin", auth, getAllProductsAdmin);
 
 // Public APIs
+
+router.get("/", getAllProductsUser);
+router.get("/:id", getOneProduct);
+
 
 
 
