@@ -3,6 +3,8 @@ import express from "express";
 import authRouter from "./module/auth/auth.controller.js";
 import userRouter from "./module/users/user.controller.js";
 import categoryRouter from "./module/categories/category.controller.js";
+import subCategoryRouter from "./module/subCategories/subCategory.controller.js";
+import productsRouter from "./module/products/product.controller.js";
 import { dataBaseConnection } from "./database/connection.js";
 import { env } from "../config/env.service.js";
 
@@ -15,6 +17,8 @@ export const callServer = () => {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/categories", categoryRouter);
+  app.use("/api/v1/subcategories", subCategoryRouter);
+  app.use("/api/v1/products", productsRouter);
   // Global error handler
   app.use((err, req, res, next) => {
     console.error(err);

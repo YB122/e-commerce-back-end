@@ -9,7 +9,7 @@ import { validateInput } from "./../../common/utils/validate.js";
 import { auth } from "./../../common/middleware/auth.js";
 import {
   createSubCategory,
-  getAllSubCategories,
+  getAllSubCategoriesAdmin,
   softDeleteSubCategory,
   updateSubCategory,
   getOneSubCategory,
@@ -32,7 +32,7 @@ router.put(
   updateSubCategory,
 );
 router.delete("/:id", auth, softDeleteSubCategory);
-router.get("/admin",auth, getAllSubCategories);
+router.get("/admin",auth, getAllSubCategoriesAdmin);
 
 // Public APIs
 

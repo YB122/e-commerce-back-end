@@ -32,20 +32,49 @@ export const updateSubCategory = async (req, res) => {
     if (!subCategoryFound) {
       return res.status(404).json({ message: "subCategory not found" });
     }
-
     const all = {};
-    if (name) {
-      const exists = await subCategoryModel.findOne({ name });
-      if (exists)
-        return res.status(400).json({ message: "subCategory already exists" });
-      all.name = name;
-    }
-    if (categoryId) {
+    if (name && categoryId) {
       let category = await categoryModel.findById(categoryId);
       if (!category)
         return res.status(404).json({ message: "category not found" });
+      const exists = await subCategoryModel.findOne({
+        name,
+        categoryId,
+      });
+      if (exists)
+        return res.status(400).json({ message: "subCategory already exists" });
+      all.name = name;
       all.categoryId = categoryId;
+    } else if (name || categoryId) {
+      if (name) {
+        const exists = await subCategoryModel.findOne({
+          name,
+          categoryId: subCategoryFound.categoryId,
+        });
+        if (exists)
+          return res
+            .status(400)
+            .json({ message: "subCategory already exists" });
+        all.name = name;
+      }
+      if (categoryId) {
+        let category = await categoryModel.findById(categoryId);
+        if (!category)
+          return res.status(404).json({ message: "category not found" });
+        const exists = await subCategoryModel.findOne({
+          name: subCategoryFound.name,
+          categoryId,
+        });
+        if (exists)
+          return res
+            .status(400)
+            .json({ message: "subCategory already exists" });
+        all.categoryId = categoryId;
+      }
+    } else {
+      return res.status(400).json({ message: "must edit anyone" });
     }
+
     const subCategory = await subCategoryModel.findByIdAndUpdate(id, all, {
       new: true,
     });
@@ -77,7 +106,7 @@ export const softDeleteSubCategory = async (req, res) => {
   }
 };
 
-export const getAllSubCategories = async (req, res) => {
+export const getAllSubCategoriesAdmin = async (req, res) => {
   if (req.user && req.bearer == "admin") {
     const subCategories = await subCategoryModel.find();
     if (subCategories.length)
