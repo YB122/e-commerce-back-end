@@ -3,7 +3,10 @@ import {
   createCategory,
   updateCategory,
   softDeleteCategory,
-  getAllCategories,
+  getAllCategoriesAdmin,
+  getOneCategory,
+  getAllCategoriesUser,
+  getSubcategoriesByCategory,
 } from "./category.service.js";
 import {
   createCategoryValidate,
@@ -15,21 +18,29 @@ import { auth } from "../../common/middleware/auth.js";
 
 const router = Router();
 
+// Dashboard (Admin Only)
+
 router.post(
   "/",
   auth,
   validateInput(createCategoryValidate),
-  upload().single("photo"),
+  upload().single("categoryImg"),
   createCategory,
 );
 router.put(
   "/:id",
   auth,
   validateInput(updateCategoryValidate),
-  upload().single("photo"),
+  upload().single("categoryImg"),
   updateCategory,
 );
-router.delete("/:id",auth, softDeleteCategory);
-router.get("/", getAllCategories);
+router.delete("/:id", auth, softDeleteCategory);
+router.get("/admin", auth, getAllCategoriesAdmin);
+router.get("/:id/admin", auth, getOneCategory);
+
+// Public APIs
+
+router.get("/", getAllCategoriesUser);
+router.get("/:id/subcategories", getSubcategoriesByCategory);
 
 export default router;

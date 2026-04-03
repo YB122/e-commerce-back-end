@@ -17,6 +17,10 @@ const userSchema = new Schema(
     avatar: { type: String, required: false },
     profileImage: { type: String, required: false },
     otp: { type: String, required: false },
+    city: { type: String, required: false },
+    country: { type: String, required: false },
+    street: { type: String, required: false },
+    zipcode: { type: String, required: false },
   },
   { timestamps: true },
 );

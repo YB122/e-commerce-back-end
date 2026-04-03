@@ -11,14 +11,13 @@ export const signupValidate = joi.object({
   phone: joi.string().pattern(PHONE_REGEX).required(),
   password: joi.string().pattern(PASSWORD_REGEX).required(),
   confirmPassword: joi.any().valid(joi.ref("password")).required(),
-  profileImage: joi.string().optional(),
-  avatar: joi.string().optional(),
   role: joi
     .string()
     .lowercase()
     .valid("admin", "user", "staff")
     .default("user")
     .optional(),
+ 
 });
 
 export const loginValidate = joi.object({

@@ -18,7 +18,7 @@ export const updateProfile = async (req, res) => {
     if (!userFound && !userFound.isActive) {
       return res.status(404).json({ message: "user not found" });
     }
-    let { name, phone } = req.body;
+    let { name, phone,city, country,street,zipcode} = req.body;
     let avatar;
     if (req.file) {
       avatar = `${env.base_url}/uploads/${req.file.originalname}`;
@@ -27,6 +27,10 @@ export const updateProfile = async (req, res) => {
     name ? (all.name = name) : null;
     phone ? (all.phone = phone) : null;
     avatar ? (all.avatar = avatar) : null;
+    all.city = city;
+    all.country = country;
+    all.street = street;
+    all.zipcode = zipcode;
     let user = await userModel.findByIdAndUpdate(req.user._id, all, {
       new: true,
     });

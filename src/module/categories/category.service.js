@@ -1,17 +1,18 @@
 import { categoryModel } from "../../database/model/category.model.js";
 import { env } from "../../../config/env.service.js";
+import { subCategoryModel } from "../../database/model/subcategory.model.js";
 
 export const createCategory = async (req, res) => {
   if (req.user && req.bearer == "admin") {
     const { name } = req.body;
-    let photo;
+    let categoryImg;
     if (req.file) {
-      photo = `${env.base_url}/uploads/${req.file.originalname}`;
+      categoryImg = `${env.base_url}/uploads/${req.file.originalname}`;
     }
     const exists = await categoryModel.findOne({ name });
     if (exists)
       return res.status(400).json({ message: "category already exists" });
-    const category = await categoryModel.insertMany({ name, photo });
+    const category = await categoryModel.insertMany({ name, categoryImg });
     if (category) {
       res.status(200).json({ message: "category created", data: category });
     } else {
@@ -30,13 +31,18 @@ export const updateCategory = async (req, res) => {
     if (!categoryFound) {
       return res.status(404).json({ message: "category not found" });
     }
-    let photo;
+    let categoryImg;
     if (req.file) {
-      photo = `${env.base_url}/uploads/${req.file.originalname}`;
+      categoryImg = `${env.base_url}/uploads/${req.file.originalname}`;
     }
     const all = {};
-    name ? (all.name = name) : null;
-    photo ? (all.photo = photo) : null;
+    if (name) {
+      const exists = await categoryModel.findOne({ name });
+      if (exists)
+        return res.status(400).json({ message: "category already exists" });
+      all.name = name;
+    }
+    categoryImg ? (all.categoryImg = categoryImg) : null;
     const category = await categoryModel.findByIdAndUpdate(id, all, {
       new: true,
     });
@@ -64,10 +70,51 @@ export const softDeleteCategory = async (req, res) => {
   }
 };
 
-export const getAllCategories = async (req, res) => {
+export const getAllCategoriesAdmin = async (req, res) => {
+  if (req.user && req.bearer == "admin") {
+    const categories = await categoryModel.find();
+    if (categories.length)
+      res.status(200).json({ message: "categories fetched", data: categories });
+    else res.status(404).json({ message: "categories not found" });
+  } else {
+    res.status(400).json({ message: "for admin only" });
+  }
+};
+
+export const getOneCategory = async (req, res) => {
+  if (req.user && req.bearer == "admin") {
+    let { id } = req.params;
+    let category = await categoryModel.findById(id);
+    if (category) {
+      res.status(200).json({ message: "category found", data: category });
+    } else {
+      res.status(404).json({ message: "category not found" });
+    }
+  } else {
+    res.status(400).json({ message: "for admin only" });
+  }
+};
+
+export const getAllCategoriesUser = async (req, res) => {
   const categories = await categoryModel.find({ isActive: true });
-  if (categories)
+  if (categories.length)
     res.status(200).json({ message: "categories fetched", data: categories });
-  else
-    res.status(404).json({ message: "categories not fetched" });
+  else res.status(404).json({ message: "categories not found" });
+};
+
+export const getSubcategoriesByCategory = async (req, res) => {
+  let { id } = req.params;
+  const category = await categoryModel.findById(id);
+  if (category?.isActive) {
+    let subCategories = await subCategoryModel.find({ categoryId: id });
+    if (subCategories.length) {
+      res
+        .status(200)
+        .json({ message: "subCategories found", data: subCategories });
+    } else {
+      res.status(404).json({ message: "subCategories not found" });
+    }
+  } else {
+    res.status(404).json({ message: "category not found" });
+  }
 };
