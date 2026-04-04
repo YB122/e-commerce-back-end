@@ -1,6 +1,6 @@
-import { categoryModel } from "../../database/model/category.model";
-import { productModel } from "../../database/model/product.model";
-import { subCategoryModel } from "../../database/model/subcategory.model";
+import { categoryModel } from "../../database/model/category.model.js";
+import { productModel } from "../../database/model/product.model.js";
+import { subCategoryModel } from "../../database/model/subcategory.model.js";
 
 export const addProduct = async (req, res) => {
   if (req.user && req.bearer == "admin") {
@@ -57,7 +57,7 @@ export const updateProduct = async (req, res) => {
       if (subCategoryFound) {
         if (subCategoryFound.categoryId == categoryId) {
           if (productFound.name != name) {
-            let productNameFound = await productModel.fineOne({ name });
+            let productNameFound = await productModel.findOne({ name });
             if (productNameFound)
               return res
                 .status(400)
@@ -80,7 +80,7 @@ export const updateProduct = async (req, res) => {
     } else {
       return res.status(404).json({ message: "category not found" });
     }
-    let product = await findByIdAndUpdate(id, all, { new: true });
+    let product = await productModel.findByIdAndUpdate(id, all, { new: true });
     product
       ? res.status(200).json({ message: "product updated done", data: product })
       : res.status(400).json({ message: "product not updated" });
@@ -118,7 +118,7 @@ export const getAllProductsAdmin = async (req, res) => {
 };
 
 export const getOneProduct = async (req, res) => {
-  let { id } = req.body;
+  let { id } = req.params;
   let productFound = await productModel.findById(id);
   if (productFound?.isActiveUser && productFound?.isActiveAdmin) {
     res.status(200).json({ message: "product found", data: productFound });

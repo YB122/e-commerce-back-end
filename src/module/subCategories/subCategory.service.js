@@ -12,7 +12,7 @@ export const createSubCategory = async (req, res) => {
     if (exists)
       return res.status(400).json({ message: "subCategory already exists" });
     const subCategory = await subCategoryModel.insertMany({ name, categoryId });
-    if (category) {
+    if (subCategory) {
       res
         .status(200)
         .json({ message: "subCategory created", data: subCategory });

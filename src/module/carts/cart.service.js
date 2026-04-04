@@ -1,120 +1,212 @@
-import { categoryModel } from "../../database/model/category.model.js";
-import { env } from "../../../config/env.service.js";
-import { subCategoryModel } from "../../database/model/subcategory.model.js";
+import { cartModel } from "../../database/model/cart.model.js";
+import { userModel } from "../../database/model/user.model.js";
+import { productModel } from "../../database/model/product.model.js";
 
-export const createCategory = async (req, res) => {
-  if (req.user && req.bearer == "admin") {
-    const { name } = req.body;
-    let categoryImg;
-    if (req.file) {
-      categoryImg = `${env.base_url}/uploads/${req.file.originalname}`;
-    }
-    const exists = await categoryModel.findOne({ name });
-    if (exists)
-      return res.status(400).json({ message: "category already exists" });
-    const category = await categoryModel.insertMany({ name, categoryImg });
-    if (category) {
-      res.status(200).json({ message: "category created", data: category });
+export const addItemToCart = async (req, res) => {
+  if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (userFound?.isActive) {
+      let { productId, quantity } = req.body;
+      let productFound = await productModel.findById(productId);
+      if (productFound?.isActiveAdmin && productFound?.isActiveUser) {
+        if (!quantity) quantity = 1;
+        if (productFound.stock >= +quantity) {
+          // Check if product already exists in cart
+          let existingCartItem = await cartModel.findOne({
+            userId: req.user._id,
+            productId,
+          });
+
+          if (existingCartItem) {
+            // Update existing cart item quantity
+            let newQuantity = existingCartItem.quantity + +quantity;
+            if (productFound.stock >= newQuantity) {
+              let updatedItem = await cartModel.findByIdAndUpdate(
+                existingCartItem._id,
+                { quantity: newQuantity },
+                { new: true }
+              );
+              updatedItem
+                ? res
+                  .status(200)
+                  .json({ message: "cart quantity updated", data: updatedItem })
+                : res.status(400).json({ message: "failed to update cart" });
+            } else {
+              return res
+                .status(404)
+                .json({ message: "we haven't that quantity of this product" });
+            }
+          } else {
+            // Add new item to cart
+            let addItem = await cartModel.insertMany({
+              userId: req.user._id,
+              productId,
+              quantity,
+            });
+            addItem
+              ? res
+                .status(200)
+                .json({ message: "product add to cart", data: addItem })
+              : res.status(400).json({ message: "product failed add to cart" });
+          }
+        } else {
+          return res
+            .status(404)
+            .json({ message: "we haven't that quantity of this product" });
+        }
+      } else {
+        res.status(404).json({ message: "product not found" });
+      }
     } else {
-      res.status(400).json({ message: "category not created" });
+      res.status(404).json({ message: "user not found" });
     }
   } else {
-    res.status(400).json({ message: "for admin only" });
+    res.status(401).json({ message: "login first" });
   }
 };
 
-export const updateCategory = async (req, res) => {
-  if (req.user && req.bearer == "admin") {
-    const { id } = req.params;
-    const { name } = req.body;
-    let categoryFound = await categoryModel.findById(id);
-    if (!categoryFound) {
-      return res.status(404).json({ message: "category not found" });
-    }
-    let categoryImg;
-    if (req.file) {
-      categoryImg = `${env.base_url}/uploads/${req.file.originalname}`;
-    }
-    const all = {};
-    if (name) {
-      const exists = await categoryModel.findOne({ name });
-      if (exists)
-        return res.status(400).json({ message: "category already exists" });
-      all.name = name;
-    }
-    categoryImg ? (all.categoryImg = categoryImg) : null;
-    const category = await categoryModel.findByIdAndUpdate(id, all, {
-      new: true,
-    });
-    if (category)
-      res.status(200).json({ message: "category updated", data: category });
-    else res.status(400).json({ message: "category not updated" });
-  } else {
-    res.status(400).json({ message: "for admin only" });
-  }
-};
+export const updateProductQuantity = async (req, res) => {
+  if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (userFound?.isActive) {
+      let { productId } = req.params;
+      let product = await productModel.findById(productId);
+      if (!product?.isActiveAdmin || !product?.isActiveUser) {
+        return res.status(404).json({ message: "product not found" });
+      }
+      let cartItem = await cartModel.findOne({
+        userId: req.user._id,
+        productId,
+      });
 
-export const softDeleteCategory = async (req, res) => {
-  if (req.user && req.bearer == "admin") {
-    const { id } = req.params;
-    const category = await categoryModel.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true },
-    );
-    if (!category)
-      return res.status(404).json({ message: "category not found" });
-    res.status(200).json({ message: "category soft-deleted", data: category });
-  } else {
-    res.status(400).json({ message: "for admin only" });
-  }
-};
-
-export const getAllCategoriesAdmin = async (req, res) => {
-  if (req.user && req.bearer == "admin") {
-    const categories = await categoryModel.find();
-    if (categories.length)
-      res.status(200).json({ message: "categories fetched", data: categories });
-    else res.status(404).json({ message: "categories not found" });
-  } else {
-    res.status(400).json({ message: "for admin only" });
-  }
-};
-
-export const getOneCategory = async (req, res) => {
-  if (req.user && req.bearer == "admin") {
-    let { id } = req.params;
-    let category = await categoryModel.findById(id);
-    if (category) {
-      res.status(200).json({ message: "category found", data: category });
+      if (!cartItem) {
+        return res
+          .status(404)
+          .json({ message: "product not found in your cart" });
+      }
+      let { quantity } = req.body;
+      if (+quantity >= 1) {
+        if (product.stock >= +quantity) {
+          let cartUpdate = await cartModel.findByIdAndUpdate(
+            cartItem._id,
+            { quantity: +quantity },
+            { new: true },
+          );
+          if (cartUpdate) {
+            res
+              .status(200)
+              .json({ message: "quantity updated", data: cartUpdate });
+          } else {
+            res.status(400).json({ message: "cart not updated" });
+          }
+        } else {
+          return res
+            .status(404)
+            .json({ message: "we haven't that quantity of this product" });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({ message: "quantity must be more than 1" });
+      }
     } else {
-      res.status(404).json({ message: "category not found" });
+      res.status(404).json({ message: "user not found" });
     }
   } else {
-    res.status(400).json({ message: "for admin only" });
+    res.status(401).json({ message: "login first" });
   }
 };
 
-export const getAllCategoriesUser = async (req, res) => {
-  const categories = await categoryModel.find({ isActive: true });
-  if (categories.length)
-    res.status(200).json({ message: "categories fetched", data: categories });
-  else res.status(404).json({ message: "categories not found" });
-};
+export const viewCart = async (req, res) => {
+  if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (userFound?.isActive) {
+      let cartItems = await cartModel.find({ userId: req.user._id });
+      if (cartItems.length) {
+        // Check if products are active and remove inactive ones
+        const inactiveCartItems = [];
 
-export const getSubcategoriesByCategory = async (req, res) => {
-  let { id } = req.params;
-  const category = await categoryModel.findById(id);
-  if (category?.isActive) {
-    let subCategories = await subCategoryModel.find({ categoryId: id });
-    if (subCategories.length) {
-      res
-        .status(200)
-        .json({ message: "subCategories found", data: subCategories });
+        for (const cartItem of cartItems) {
+          const product = await productModel.findById(cartItem.productId);
+          if (!product?.isActiveAdmin || !product?.isActiveUser) {
+            inactiveCartItems.push(cartItem._id);
+          }
+        }
+
+        // Remove inactive products from cart
+        if (inactiveCartItems.length > 0) {
+          const deleteResult = await cartModel.deleteMany({
+            _id: { $in: inactiveCartItems },
+          });
+          if (deleteResult.deletedCount > 0) {
+            // Get updated cart items
+            cartItems = await cartModel.find({ userId: req.user._id });
+            if (cartItems.length == 0) {
+              return res.status(404).json({
+                message: "your cart is empty after removing inactive products",
+              });
+            }
+          }
+        }
+
+        res.status(200).json({ message: "success", data: cartItems });
+      } else {
+        res.status(404).json({ message: "your cart is empty" });
+      }
     } else {
-      res.status(404).json({ message: "subCategories not found" });
+      res.status(404).json({ message: "user not found" });
     }
   } else {
-    res.status(404).json({ message: "category not found" });
+    res.status(401).json({ message: "login first" });
+  }
+};
+
+export const removeItemFromCart = async (req, res) => {
+  if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (userFound?.isActive) {
+      let { productId } = req.params;
+      let product = await productModel.findById(productId);
+      if (!product?.isActiveAdmin || !product?.isActiveUser) {
+        return res.status(404).json({ message: "product not found" });
+      }
+      let cartItem = await cartModel.findOne({
+        userId: req.user._id,
+        productId,
+      });
+      if (!cartItem)
+        return res.status(404).json({ message: "item not found in your cart" });
+      let deletedItem = await cartModel.findByIdAndDelete(cartItem._id, {
+        new: true,
+      });
+      if (deletedItem)
+        res.status(200).json({ message: "cart deleted", data: deletedItem });
+      else res.status(400).json({ message: "cart not deleted" });
+    } else {
+      res.status(404).json({ message: "user not found" });
+    }
+  } else {
+    res.status(401).json({ message: "login first" });
+  }
+};
+
+export const clearCart = async (req, res) => {
+  if (req.user) {
+    let userFound = await userModel.findById(req.user._id);
+    if (userFound?.isActive) {
+      let deleteResult = await cartModel.deleteMany({ userId: req.user._id });
+      if (deleteResult.deletedCount > 0) {
+        res.status(200).json({
+          message: "cart cleared successfully",
+          data: deleteResult,
+        });
+      } else {
+        res.status(404).json({ message: "cart is already empty" });
+      }
+    } else {
+      res.status(404).json({ message: "user not found" });
+    }
+  } else {
+    res.status(401).json({ message: "login first" });
   }
 };

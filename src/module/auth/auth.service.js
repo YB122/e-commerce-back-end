@@ -20,10 +20,6 @@ export const signup = async (req, res) => {
   if (req.file) {
     avatar = `${env.base_url}/uploads/${req.file.originalname}`;
   }
-  // let profileImage;
-  // if (req.file) {
-  //   profileImage = `${env.base_url}/uploads/${req.file.originalname}`;
-  // }
   let user;
   if (emailSearch) {
     user = await userModel.findOneAndUpdate(
@@ -70,9 +66,6 @@ export const login = async (req, res) => {
       if (!userSearch.isVerified) {
         return res.status(400).json({ message: "your email not verified" });
       }
-      if (!userSearch.isActive) {
-        res.status(400).json({ message: "your account pan" });
-      }
       let accessToken = generateToken(userSearch, env.accessToken);
       let refreshToken = generateToken(userSearch, env.refreshToken);
       res.status(200).json({
@@ -97,7 +90,10 @@ export const generateNewAccessToken = async (req, res) => {
       signature = env.signatureAdmin;
       break;
     case "user":
-      signature = env.refreshToken;
+      signature = env.signatureUser;
+      break;
+    case "staff":
+      signature = env.signatureStaff;
       break;
   }
   let decode = jwt.verify(refreshToken, signature);
@@ -134,7 +130,7 @@ export const verifyEmail = async (req, res) => {
 export const resendVerification = async (req, res) => {
   let { email } = req.body;
   let userFound = await userModel.findOne({ email });
-  if (!userFound && !userFound.isActive) {
+  if (!userFound?.isActive) {
     return res.status(400).json({ message: "user not found" });
   }
   if (userFound.isVerified) {
@@ -151,8 +147,8 @@ export const resendVerification = async (req, res) => {
 export const forgetPassword = async (req, res) => {
   let { email } = req.body;
   let userFound = await userModel.findOne({ email });
-  if (!userFound && !userFound.isActive) {
-    return res.json({ message: "user not found" });
+  if (!userFound?.isActive) {
+    return res.status(404).json({ message: "user not found" });
   }
   let otp = Math.floor(100000 + Math.random() * 900000).toString();
   userFound.otp = otp;
@@ -167,8 +163,8 @@ export const resetPassword = async (req, res) => {
     return res.json({ message: "password not matched" });
   }
   let userFound = await userModel.findOne({ email });
-  if (!userFound && !userFound.isActive) {
-    return res.json({ message: "user not found" });
+  if (!userFound?.isActive) {
+    return res.status(404).json({ message: "user not found" });
   }
   if (otp != userFound.otp) {
     return res.status(400).json({ message: "otp not correct" });

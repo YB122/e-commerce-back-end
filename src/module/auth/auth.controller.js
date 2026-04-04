@@ -40,7 +40,6 @@ router.post(
 );
 router.post(
   "/reset-password",
-  auth,
   validateInput(resetPasswordValidate),
   resetPassword,
 );
