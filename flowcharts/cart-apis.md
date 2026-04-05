@@ -2,6 +2,8 @@
 
 ## 1. POST /api/v1/cart (Add Item to Cart)
 
+![Add Item to Cart API Flowchart](images/cart/add-item-to-cart-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -29,6 +31,8 @@ flowchart TD
 
 ## 2. PUT /api/v1/cart/:productId (Update Quantity)
 
+![Update Cart Quantity API Flowchart](images/cart/update-cart-quantity-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -49,6 +53,8 @@ flowchart TD
 
 ## 3. GET /api/v1/cart (View Cart)
 
+![View Cart API Flowchart](images/cart/view-cart-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -68,6 +74,8 @@ flowchart TD
 
 ## 4. DELETE /api/v1/cart/:productId (Remove Item)
 
+![Remove Cart Item API Flowchart](images/cart/remove-cart-item-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -83,6 +91,8 @@ flowchart TD
 ```
 
 ## 5. DELETE /api/v1/cart (Clear Cart)
+
+![Clear Cart API Flowchart](images/cart/clear-cart-api.png)
 
 ```mermaid
 flowchart TD

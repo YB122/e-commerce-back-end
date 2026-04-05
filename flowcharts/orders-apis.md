@@ -3,6 +3,9 @@
 ## User APIs
 
 ### POST /checkout - Create Order
+
+![Create Order API Flowchart](images/orders/create-order-api.png)
+
 ```mermaid
 flowchart TD
     A[User Request] --> B[Authentication Check]
@@ -47,6 +50,9 @@ flowchart TD
 ```
 
 ### GET / - Get User Orders
+
+![Get User Orders API Flowchart](images/orders/get-user-orders-api.png)
+
 ```mermaid
 flowchart TD
     A[User Request] --> B[Authentication Check]
@@ -63,6 +69,9 @@ flowchart TD
 ```
 
 ### GET /:id - Get Single Order
+
+![Get Single Order API Flowchart](images/orders/get-single-order-api.png)
+
 ```mermaid
 flowchart TD
     A[User Request] --> B[Authentication Check]
@@ -81,6 +90,9 @@ flowchart TD
 ## Admin APIs
 
 ### GET /admin - Get All Orders
+
+![Get All Orders Admin API Flowchart](images/orders/get-all-orders-admin-api.png)
+
 ```mermaid
 flowchart TD
     A[Admin Request] --> B[Authentication Check]
@@ -97,6 +109,9 @@ flowchart TD
 ```
 
 ### PATCH /admin/:id/status - Update Order Status
+
+![Update Order Status Admin API Flowchart](images/orders/update-order-status-admin-api.png)
+
 ```mermaid
 flowchart TD
     A[Admin Request] --> B[Authentication Check]
@@ -116,6 +131,7 @@ flowchart TD
 ```
 
 ## Order Status Flow
+
 ```mermaid
 flowchart LR
     A[pending] --> B[processing]
@@ -127,6 +143,7 @@ flowchart LR
 ```
 
 ## Payment Methods
+
 ```mermaid
 flowchart TD
     A[Payment Method Selection] --> B{Method Type}
@@ -135,6 +152,7 @@ flowchart TD
 ```
 
 ## Error Handling Patterns
+
 ```mermaid
 flowchart TD
     A[API Request] --> B{Authentication Valid?}
@@ -156,6 +174,7 @@ flowchart TD
 ```
 
 ## Security Checks
+
 ```mermaid
 flowchart TD
     A[Order Access] --> B{User Type}

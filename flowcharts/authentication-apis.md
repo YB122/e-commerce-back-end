@@ -2,6 +2,8 @@
 
 ## 1. POST /api/v1/auth/signup
 
+![Signup API Flowchart](images/auth/signup-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B{Validate Input}
@@ -25,6 +27,8 @@ flowchart TD
 
 ## 2. POST /api/v1/auth/login
 
+![Login API Flowchart](images/auth/login-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B{Validate Input}
@@ -42,6 +46,8 @@ flowchart TD
 
 ## 3. GET /api/v1/auth/verify-email/:token
 
+![Email Verification API Flowchart](images/auth/verify-email-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Verify JWT Token]
@@ -55,6 +61,8 @@ flowchart TD
 ```
 
 ## 4. POST /api/v1/auth/resend-verification
+
+![Resend Verification API Flowchart](images/auth/resend-verification-api.png)
 
 ```mermaid
 flowchart TD
@@ -71,6 +79,8 @@ flowchart TD
 
 ## 5. POST /api/v1/auth/forget-password
 
+![Forget Password API Flowchart](images/auth/forget-password-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B{Validate Input}
@@ -84,6 +94,8 @@ flowchart TD
 ```
 
 ## 6. POST /api/v1/auth/reset-password
+
+![Reset Password API Flowchart](images/auth/reset-password-api.png)
 
 ```mermaid
 flowchart TD
@@ -102,6 +114,8 @@ flowchart TD
 ```
 
 ## 7. POST /api/v1/auth/generate-new-access-token
+
+![Generate New Access Token API Flowchart](images/auth/generate-new-access-token-api.png)
 
 ```mermaid
 flowchart TD

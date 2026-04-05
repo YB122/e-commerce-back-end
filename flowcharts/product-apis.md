@@ -2,6 +2,8 @@
 
 ## 1. POST /api/v1/products (Admin Only)
 
+![Create Product API Flowchart](images/product/create-product-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -23,6 +25,8 @@ flowchart TD
 ```
 
 ## 2. PUT /api/v1/products/:id (Admin Only)
+
+![Update Product API Flowchart](images/product/update-product-api.png)
 
 ```mermaid
 flowchart TD
@@ -49,6 +53,8 @@ flowchart TD
 
 ## 3. DELETE /api/v1/products/:id (Admin Only)
 
+![Delete Product API Flowchart](images/product/delete-product-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -62,6 +68,8 @@ flowchart TD
 
 ## 4. GET /api/v1/products/admin (Admin Only)
 
+![Get Products Admin API Flowchart](images/product/get-products-admin-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -72,6 +80,8 @@ flowchart TD
 ```
 
 ## 5. GET /api/v1/products (Public)
+
+![Get Products Public API Flowchart](images/product/get-products-public-api.png)
 
 ```mermaid
 flowchart TD
@@ -103,6 +113,8 @@ flowchart TD
 ```
 
 ## 6. GET /api/v1/products/:id (Public)
+
+![Get Single Product API Flowchart](images/product/get-single-product-api.png)
 
 ```mermaid
 flowchart TD

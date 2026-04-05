@@ -2,6 +2,8 @@
 
 ## 1. GET /api/v1/users/profile
 
+![Get User Profile API Flowchart](images/user/get-user-profile-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -12,6 +14,8 @@ flowchart TD
 ```
 
 ## 2. PUT /api/v1/users/profile
+
+![Update User Profile API Flowchart](images/user/update-user-profile-api.png)
 
 ```mermaid
 flowchart TD
@@ -32,6 +36,8 @@ flowchart TD
 
 ## 3. DELETE /api/v1/users/profile
 
+![Delete User Profile API Flowchart](images/user/delete-user-profile-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -44,6 +50,8 @@ flowchart TD
 ```
 
 ## 4. POST /api/v1/users/upload-profile-image
+
+![Upload Profile Image API Flowchart](images/user/upload-profile-image-api.png)
 
 ```mermaid
 flowchart TD

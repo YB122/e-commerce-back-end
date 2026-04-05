@@ -2,6 +2,8 @@
 
 ## 1. POST /api/v1/subcategories (Admin Only)
 
+![Create SubCategory API Flowchart](images/subcategories/create-subcategory-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -17,6 +19,8 @@ flowchart TD
 ```
 
 ## 2. PUT /api/v1/subcategories/:id (Admin Only)
+
+![Update SubCategory API Flowchart](images/subcategories/update-subcategory-api.png)
 
 ```mermaid
 flowchart TD
@@ -48,6 +52,8 @@ flowchart TD
 
 ## 3. DELETE /api/v1/subcategories/:id (Admin Only)
 
+![Delete SubCategory API Flowchart](images/subcategories/delete-subcategory-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -61,6 +67,8 @@ flowchart TD
 
 ## 4. GET /api/v1/subcategories/admin (Admin Only)
 
+![Get SubCategories Admin API Flowchart](images/subcategories/get-subcategories-admin-api.png)
+
 ```mermaid
 flowchart TD
     A[Client Request] --> B[Auth Middleware]
@@ -71,6 +79,8 @@ flowchart TD
 ```
 
 ## 5. GET /api/v1/subcategories/:id (Public)
+
+![Get Single SubCategory API Flowchart](images/subcategories/get-single-subcategory-api.png)
 
 ```mermaid
 flowchart TD

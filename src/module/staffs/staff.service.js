@@ -363,9 +363,7 @@ export const removeDeduction = async (req, res) => {
   }
 };
 
-// getStaffMonthlySalary,
-// markAsPaid,
-// adjustSalary
+
 
 export const getStaffMonthlySalary = async (req, res) => {
   try {
@@ -373,28 +371,26 @@ export const getStaffMonthlySalary = async (req, res) => {
       let { id } = req.params;
       let { month } = req.query;
 
-      // Check if staff exists
+
       let staffFound = await staffModel.findById(id);
       if (!staffFound) {
         return res.status(404).json({ message: "Staff not found" });
       }
 
-      // Validate month format (YYYY-MM)
+
       if (!/^\d{4}-\d{2}$/.test(month)) {
         return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
       }
 
-      // Check if staff is active
+
       if (!staffFound?.isActive) {
         return res.status(400).json({ message: "Staff is not active" });
       }
 
-      // Parse month to get start and end dates
       const [year, monthNum] = month.split('-').map(Number);
       const startDate = new Date(year, monthNum - 1, 1);
-      const endDate = new Date(year, monthNum, 0); // Last day of month
+      const endDate = new Date(year, monthNum, 0);
 
-      // Check if staff has attendance records for this month
       const monthAttendance = staffFound.attendance.filter(record => {
         const recordDate = new Date(record.date);
         return recordDate >= startDate && recordDate <= endDate;
@@ -407,7 +403,7 @@ export const getStaffMonthlySalary = async (req, res) => {
         });
       }
 
-      // Count attendance types
+
       const attendanceStats = monthAttendance.reduce((stats, record) => {
         if (record.status == 'present') stats.present++;
         else if (record.status == 'late') stats.late++;
@@ -415,17 +411,17 @@ export const getStaffMonthlySalary = async (req, res) => {
         return stats;
       }, { present: 0, late: 0, absent: 0 });
 
-      // Calculate working days in month (excluding weekends)
+
       let workingDaysInMonth = 0;
       for (let day = 1; day <= endDate.getDate(); day++) {
         const currentDate = new Date(year, monthNum - 1, day);
         const dayOfWeek = currentDate.getDay();
-        if (dayOfWeek != 0 && dayOfWeek != 6) { // Not Sunday (0) or Saturday (6)
+        if (dayOfWeek != 0 && dayOfWeek != 6) {
           workingDaysInMonth++;
         }
       }
 
-      // Get manual deductions for this month
+
       const manualDeductions = await deductionModel.find({
         staff: id,
         month: month
@@ -433,7 +429,7 @@ export const getStaffMonthlySalary = async (req, res) => {
 
       const totalManualDeductions = manualDeductions.reduce((sum, deduction) => sum + deduction.amount, 0);
 
-      // Salary calculations based on provided formulas
+
       const dailySalary = staffFound.dailySalary;
       const baseSalary = dailySalary * workingDaysInMonth;
 
@@ -441,14 +437,14 @@ export const getStaffMonthlySalary = async (req, res) => {
       const absentDeductions = attendanceStats.absent * dailySalary;
       const totalDeductions = lateDeductions + absentDeductions + totalManualDeductions;
 
-      const adjustments = 0; // Can be implemented later
+      const adjustments = 0;
       const finalSalary = baseSalary - totalDeductions + adjustments;
 
-      // Check if monthly report already exists for this month
+
       const existingReportIndex = staffFound.monthlyReports.findIndex(report => report.month == month);
 
       if (existingReportIndex != -1) {
-        // Update existing report
+
         staffFound.monthlyReports[existingReportIndex] = {
           month: month,
           totalDaysWorked: attendanceStats.present + attendanceStats.late,
@@ -459,7 +455,7 @@ export const getStaffMonthlySalary = async (req, res) => {
           adjustments: staffFound.monthlyReports[existingReportIndex].adjustments || []
         };
       } else {
-        // Create new monthly report
+
         const monthlyReport = {
           month: month,
           totalDaysWorked: attendanceStats.present + attendanceStats.late,
@@ -471,13 +467,13 @@ export const getStaffMonthlySalary = async (req, res) => {
         staffFound.monthlyReports.push(monthlyReport);
       }
 
-      // Save updated staff record
+
       let savedStaff = await staffFound.save();
       if (!savedStaff) {
         return res.status(500).json({ message: "Failed to save monthly report" });
       }
 
-      // Get the updated report to return
+
       const updatedReport = staffFound.monthlyReports.find(report => report.month == month);
 
       res.status(200).json({
@@ -503,18 +499,15 @@ export const markAsPaid = async (req, res) => {
       let { id } = req.params;
       let { month } = req.query;
 
-      // Check if staff exists
       let staffFound = await staffModel.findById(id);
       if (!staffFound) {
         return res.status(404).json({ message: "Staff not found" });
       }
 
-      // Validate month format (YYYY-MM)
       if (!/^\d{4}-\d{2}$/.test(month)) {
         return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
       }
 
-      // Find the monthly report for the specified month
       const monthlyReport = staffFound.monthlyReports.find(report => report.month == month);
       if (!monthlyReport) {
         return res.status(404).json({
@@ -523,7 +516,7 @@ export const markAsPaid = async (req, res) => {
         });
       }
 
-      // Check if already paid
+
       if (monthlyReport.isPaid) {
         return res.status(400).json({
           message: "Salary for this month is already marked as paid",
@@ -532,23 +525,21 @@ export const markAsPaid = async (req, res) => {
         });
       }
 
-      // Set isPaid: true
       monthlyReport.isPaid = true;
 
-      // Record paidAt timestamp
       monthlyReport.paidAt = new Date();
 
-      // Generate salary slip (optional)
+
       const salarySlip = {
         month: month,
         totalDaysWorked: monthlyReport.totalDaysWorked,
         finalSalary: monthlyReport.finalSalary,
         totalDeductions: monthlyReport.totalDeductions,
         paidAt: monthlyReport.paidAt,
-        paidBy: req.user._id // Admin who marked as paid
+        paidBy: req.user._id
       };
 
-      // Save the updated staff record
+
       let savedStaff = await staffFound.save();
       if (!savedStaff) {
         return res.status(500).json({ message: "Failed to update payment status" });
@@ -559,7 +550,7 @@ export const markAsPaid = async (req, res) => {
         month: month,
         paidAt: monthlyReport.paidAt,
         finalSalary: monthlyReport.finalSalary,
-        salarySlip: salarySlip // Optional salary slip
+        salarySlip: salarySlip
       });
 
     } else {
@@ -580,18 +571,18 @@ export const adjustSalary = async (req, res) => {
     let { id, month } = req.params;
     let { adjustmentAmount, adjustmentReason } = req.body;
 
-    // Check if staff exists
+
     let staffFound = await staffModel.findById(id);
     if (!staffFound) {
       return res.status(404).json({ message: "Staff not found" });
     }
 
-    // Validate month format (YYYY-MM)
+
     if (!/^\d{4}-\d{2}$/.test(month)) {
       return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
     }
 
-    // Validate adjustment amount
+
     if (typeof adjustmentAmount != 'number' || Number.isNaN(adjustmentAmount)) {
       return res.status(400).json({ message: "Adjustment amount must be a valid number" });
     }
@@ -600,7 +591,6 @@ export const adjustSalary = async (req, res) => {
       return res.status(400).json({ message: "Adjustment reason is required" });
     }
 
-    // Find the monthly report for the specified month
     const monthlyReport = staffFound.monthlyReports.find(report => report.month == month);
     if (!monthlyReport) {
       return res.status(404).json({
@@ -609,7 +599,7 @@ export const adjustSalary = async (req, res) => {
       });
     }
 
-    // Check if already paid
+
     if (monthlyReport.isPaid) {
       return res.status(400).json({
         message: "Cannot adjust salary for a month that is already marked as paid",
@@ -618,11 +608,10 @@ export const adjustSalary = async (req, res) => {
       });
     }
 
-    // Apply adjustment
     const oldFinalSalary = monthlyReport.finalSalary;
     monthlyReport.finalSalary += adjustmentAmount;
 
-    // Add adjustment to the adjustments array
+
     if (!monthlyReport.adjustments) {
       monthlyReport.adjustments = [];
     }
@@ -634,7 +623,6 @@ export const adjustSalary = async (req, res) => {
       month: month
     });
 
-    // Save the updated staff record
     let savedStaff = await staffFound.save();
     if (!savedStaff) {
       return res.status(500).json({ message: "Failed to apply salary adjustment" });
