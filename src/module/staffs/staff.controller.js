@@ -1,0 +1,49 @@
+import { Router } from "express";
+import { validateInput } from "../../common/utils/validate.js";
+
+import { auth } from "../../common/middleware/auth.js";
+
+import { updateStaffValidate, addStaffValidate, checkInOutValidate } from "./staff.validate.js";
+import {
+  getAllStaffs,
+  addStaff,
+  getStaffDetails,
+  updateStaff,
+  softDeleteStaff,
+  checkIn,
+  checkOut,
+  addDeduction,
+  getStaffDeductions,
+  updateDeduction,
+  removeDeduction
+} from "./staff.service.js";
+
+
+const router = Router();
+
+// Apis for admin
+
+router.get("/admin", auth, getAllStaffs);
+router.post(
+  "/admin",
+  auth,
+  validateInput(addStaffValidate),
+  addStaff
+);
+router.delete("/admin/:id", auth, softDeleteStaff);
+router.get('/admin/:id', auth, getStaffDetails);
+router.put('/admin/:id', auth, validateInput(updateStaffValidate), updateStaff);
+
+// Apis for Staff
+
+router.post('/check-in', auth, checkIn);
+router.post('/check-out', auth, checkOut);
+
+// Apis for admin - Deductions
+
+router.post('/admin/:id/deductions', auth, addDeduction);
+router.get('/admin/:id/deductions', auth, getStaffDeductions);
+router.put('/admin/:id/deductions/:deductionId', auth, updateDeduction);
+router.delete('/admin/:id/deductions/:deductionId', auth, removeDeduction);
+
+export default router;

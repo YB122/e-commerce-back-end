@@ -7,6 +7,7 @@ import subCategoryRouter from "./module/subCategories/subCategory.controller.js"
 import productsRouter from "./module/products/product.controller.js";
 import cartRouter from "./module/carts/cart.controller.js";
 import orderRouter from "./module/orders/order.controller.js";
+import staffRouter from "./module/staffs/staff.controller.js";
 import { dataBaseConnection } from "./database/connection.js";
 import { env } from "../config/env.service.js";
 
@@ -23,6 +24,7 @@ export const callServer = () => {
   app.use("/api/v1/products", productsRouter);
   app.use("/api/v1/cart", cartRouter);
   app.use("/api/v1/orders", orderRouter);
+  app.use("/api/v1/staff", staffRouter);
   // Global error handler
   app.use((err, req, res, next) => {
     console.error(err);
