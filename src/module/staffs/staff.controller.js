@@ -15,7 +15,10 @@ import {
   addDeduction,
   getStaffDeductions,
   updateDeduction,
-  removeDeduction
+  removeDeduction,
+  getStaffMonthlySalary,
+  markAsPaid,
+  adjustSalary
 } from "./staff.service.js";
 
 
@@ -45,5 +48,11 @@ router.post('/admin/:id/deductions', auth, validateInput(addDeductionValidate), 
 router.get('/admin/:id/deductions', auth, getStaffDeductions);
 router.put('/admin/:id/deductions/:deductionId', auth, validateInput(updateDeductionValidate), updateDeduction);
 router.delete('/admin/:id/deductions/:deductionId', auth, removeDeduction);
+
+// Apis Monthly Salary
+
+router.get('/admin/:id/salary/:month', auth, getStaffMonthlySalary);
+router.patch('/admin/:id/salary/:month/pay', auth, markAsPaid);
+router.put('/admin/:id/salary/:month/adjust', auth, adjustSalary);
 
 export default router;
