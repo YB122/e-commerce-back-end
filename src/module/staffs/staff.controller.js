@@ -3,7 +3,7 @@ import { validateInput } from "../../common/utils/validate.js";
 
 import { auth } from "../../common/middleware/auth.js";
 
-import { updateStaffValidate, addStaffValidate, checkInOutValidate } from "./staff.validate.js";
+import { updateStaffValidate, addStaffValidate, addDeductionValidate, updateDeductionValidate } from "./staff.validate.js";
 import {
   getAllStaffs,
   addStaff,
@@ -41,9 +41,9 @@ router.post('/check-out', auth, checkOut);
 
 // Apis for admin - Deductions
 
-router.post('/admin/:id/deductions', auth, addDeduction);
+router.post('/admin/:id/deductions', auth, validateInput(addDeductionValidate), addDeduction);
 router.get('/admin/:id/deductions', auth, getStaffDeductions);
-router.put('/admin/:id/deductions/:deductionId', auth, updateDeduction);
+router.put('/admin/:id/deductions/:deductionId', auth, validateInput(updateDeductionValidate), updateDeduction);
 router.delete('/admin/:id/deductions/:deductionId', auth, removeDeduction);
 
 export default router;

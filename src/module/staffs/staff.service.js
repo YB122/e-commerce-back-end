@@ -213,7 +213,7 @@ export const checkOut = async (req, res) => {
       const hoursShort = 8 - workingHours;
       const deductionAmount = (hoursShort / 8) * staff.dailySalary;
       try {
-        await deductionModel.create({
+        await deductionModel.insertMany({
           staff: staff._id,
           month: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`,
           amount: Math.round(deductionAmount * 100) / 100,
@@ -243,7 +243,29 @@ export const checkOut = async (req, res) => {
 
 export const addDeduction = async (req, res) => {
   if (req.user && req.bearer == 'admin') {
-    res.status(200).json({ message: "addDeduction function - implement this" });
+    let { id } = req.params;
+    let staffFound = await staffModel.findById(id);
+    if (!staffFound) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+    let { amount, reason } = req.body;
+    if (!amount || !reason) {
+      return res.status(400).json({ message: "Amount and reason are required" });
+    }
+
+    const now = new Date();
+    let deduction = await deductionModel.insertMany({
+      staff: id,
+      amount,
+      reason,
+      month: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`,
+      date: now
+    });
+    if (deduction)
+      return res.status(200).json({ message: "Deduction added successfully", data: deduction });
+    else
+      return res.status(400).json({ message: "Error adding deduction" });
+
   } else {
     res.status(401).json({ message: "for admin only" });
   }
@@ -251,7 +273,16 @@ export const addDeduction = async (req, res) => {
 
 export const getStaffDeductions = async (req, res) => {
   if (req.user && req.bearer == 'admin') {
-    res.status(200).json({ message: "getStaffDeductions function - implement this" });
+    let { id } = req.params;
+    let staffFound = await staffModel.findById(id);
+    if (!staffFound) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+    let deductions = await deductionModel.find({ staff: id });
+    if (deductions.length == 0) {
+      return res.status(404).json({ message: "No deductions found for this staff" });
+    }
+    return res.status(200).json({ message: "Staff deductions", data: deductions });
   } else {
     res.status(401).json({ message: "for admin only" });
   }
@@ -259,7 +290,48 @@ export const getStaffDeductions = async (req, res) => {
 
 export const updateDeduction = async (req, res) => {
   if (req.user && req.bearer == 'admin') {
-    res.status(200).json({ message: "updateDeduction function - implement this" });
+    let { id, deductionId } = req.params;
+    let { amount, reason, date, month } = req.body;
+
+    let staffFound = await staffModel.findById(id);
+    if (!staffFound) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+
+    let deductionFound = await deductionModel.findById(deductionId);
+    if (!deductionFound) {
+      return res.status(404).json({ message: "Deduction not found" });
+    }
+
+    if (deductionFound.staff != id) {
+      return res.status(400).json({ message: "Deduction does not belong to this staff" });
+    }
+    if (!(amount && reason && date && month)) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    try {
+      const updateFields = {};
+      if (amount) updateFields.amount = amount;
+      if (reason) updateFields.reason = reason;
+      if (date) updateFields.date = date;
+      if (month) updateFields.month = month;
+
+      const updatedDeduction = await deductionModel.findByIdAndUpdate(
+        deductionId,
+        updateFields,
+        { new: true }
+      );
+
+      return res.status(200).json({
+        message: "Deduction updated successfully",
+        data: updatedDeduction
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: "Error updating deduction",
+        error: error.message
+      });
+    }
   } else {
     res.status(401).json({ message: "for admin only" });
   }
@@ -267,7 +339,25 @@ export const updateDeduction = async (req, res) => {
 
 export const removeDeduction = async (req, res) => {
   if (req.user && req.bearer == 'admin') {
-    res.status(200).json({ message: "removeDeduction function - implement this" });
+    let { id, deductionId } = req.params;
+    let staffFound = await staffModel.findById(id);
+    if (!staffFound) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+    let deductionFound = await deductionModel.findById(deductionId);
+    if (!deductionFound) {
+      return res.status(404).json({ message: "Deduction not found" });
+    }
+    if (deductionFound.staff.toString() != id) {
+      return res.status(400).json({ message: "Deduction does not belong to this staff" });
+    }
+    let deductionRemoved = await deductionModel.findByIdAndDelete(deductionId, { new: true });
+    if (deductionRemoved) {
+      res.status(200).json({ message: "success", data: deductionRemoved });
+    }
+    else {
+      res.status(400).json({ message: "deduction not removed" });
+    }
   } else {
     res.status(401).json({ message: "for admin only" });
   }

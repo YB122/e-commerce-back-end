@@ -24,3 +24,17 @@ export const updateStaffValidate = joi.object({
   }).optional()
 });
 
+export const addDeductionValidate = joi.object({
+  amount: joi.number().positive().required(),
+  reason: joi.string().min(3).max(200).required(),
+  date: joi.date().required(),
+  month: joi.string().pattern(/^\d{4}-\d{2}$/).required()
+});
+
+export const updateDeductionValidate = joi.object({
+  amount: joi.number().positive().optional(),
+  reason: joi.string().min(3).max(200).optional(),
+  date: joi.date().optional(),
+  month: joi.string().pattern(/^\d{4}-\d{2}$/).optional()
+});
+
