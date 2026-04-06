@@ -152,12 +152,12 @@ flowchart TD
     D -->|Password Mismatch| F[Return 400 - Password Not Matched]
     D -->|Valid| G[Hash Password]
     G --> H{Avatar Uploaded?}
-    H -->|Yes| I[Save Avatar URL]|
-    H -->|No| J[Continue Without Avatar]|
-    I --> K{User Exists Inactive?}||
+    H -->|Yes| I[Save Avatar URL]
+    H -->|No| J[Continue Without Avatar]
+    I --> K{User Exists Inactive?}
     J --> K
-    K -->|Yes| L[Update Existing User]||
-    K -->|No| M[Create New User]||
+    K -->|Yes| L[Update Existing User]
+    K -->|No| M[Create New User]
     L --> N[Generate Verification Token]
     M --> N
     N --> O[Send Verification Email]
@@ -173,11 +173,11 @@ flowchart TD
     B -->|Valid| D[Find User by Email]
     D -->|Not Found/Inactive| E[Return 400 - Invalid Credentials]
     D -->|Found| F{Compare Password}
-    F -->|Mismatch| E||
+    F -->|Mismatch| E
     F -->|Match| G{Email Verified?}
-    G -->|No| H[Return 400 - Email Not Verified]||
+    G -->|No| H[Return 400 - Email Not Verified]
     G -->|Yes| I[Generate Access Token]
-    I --> J[Generate Refresh Token]||
+    I --> J[Generate Refresh Token]
     J --> K[Return 200 - Login Success]
 ```
 
@@ -199,11 +199,11 @@ flowchart TD
     I --> K{Stock Available?}
     J --> K
     K -->|Insufficient| L[Return 404 - Insufficient Stock]
-    K -->|Available| M[Check if Item Already in Cart]|
+    K -->|Available| M[Check if Item Already in Cart]
     M -->|Exists| N[Update Quantity]
     M -->|Not Exists| O[Add New Cart Item]
-    N --> P{New Total Stock OK?}|
-    P -->|Insufficient| Q[Return 404 - Insufficient Stock]|
+    N --> P{New Total Stock OK?}
+    P -->|Insufficient| Q[Return 404 - Insufficient Stock]
     P -->|Available| R[Update Cart Item]
     R --> S[Return 200 - Cart Updated]
     O --> T[Create Cart Item]
@@ -577,11 +577,11 @@ flowchart TD
     I --> K{Stock Available?}
     J --> K
     K -->|Insufficient| L[Return 404 - Insufficient Stock]
-    K -->|Available| M[Check if Item Already in Cart]|
+    K -->|Available| M[Check if Item Already in Cart]
     M -->|Exists| N[Update Quantity]
     M -->|Not Exists| O[Add New Cart Item]
-    N --> P{New Total Stock OK?}|
-    P -->|Insufficient| Q[Return 404 - Insufficient Stock]|
+    N --> P{New Total Stock OK?}
+    P -->|Insufficient| Q[Return 404 - Insufficient Stock]
     P -->|Available| R[Update Cart Item]
     R --> S[Return 200 - Cart Updated]
     O --> T[Create Cart Item]
@@ -602,11 +602,11 @@ flowchart TD
     F -->|Not Found/Inactive| G[Return 404 - Product Not Found]
     F -->|Found| H[Find Cart Item]
     H -->|Not Found| I[Return 404 - Item Not in Cart]
-    H -->|Found| J{Quantity Valid?}||
-    J -->|Invalid| K[Return 400 - Quantity Must Be >= 1]||
-    J -->|Valid| L{Stock Available?}||
-    L -->|Insufficient| M[Return 404 - Insufficient Stock]||
-    L -->|Available| N[Update Cart Item Quantity]||
+    H -->|Found| J{Quantity Valid?}
+    J -->|Invalid| K[Return 400 - Quantity Must Be >= 1]
+    J -->|Valid| L{Stock Available?}
+    L -->|Insufficient| M[Return 404 - Insufficient Stock]
+    L -->|Available| N[Update Cart Item Quantity]
     N --> O[Return 200 - Quantity Updated]
 ```
 
@@ -622,13 +622,13 @@ flowchart TD
     D -->|Not Found/Inactive| E[Return 404 - User Not Found]
     D -->|Found| F[Get User Cart Items]
     F -->|Empty Cart| G[Return 404 - Cart Empty]
-    F -->|Has Items| H[Check Each Item's Product Status]|
-    H --> I{Inactive Products Found?}|
-    I -->|Yes| J[Remove Inactive Items]|
-    J --> K{Cart Now Empty?}|
-    K -->|Yes| L[Return 404 - Cart Empty After Cleanup]|
-    K -->|No| M[Return 200 - Updated Cart]|
-    I -->|No| N[Return 200 - Cart Data]|
+    F -->|Has Items| H[Check Each Item's Product Status]
+    H --> I{Inactive Products Found?}
+    I -->|Yes| J[Remove Inactive Items]
+    J --> K{Cart Now Empty?}
+    K -->|Yes| L[Return 404 - Cart Empty After Cleanup]
+    K -->|No| M[Return 200 - Updated Cart]
+    I -->|No| N[Return 200 - Cart Data]
 ```
 
 #### 4. Remove Cart Item (DELETE /api/v1/cart/:productId)
@@ -677,9 +677,9 @@ flowchart TD
     B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
     B -->|Admin Auth| D[Validate Input]
     D -->|Invalid| E[Return 400 - Validation Error]
-    D -->|Valid| F{Category Image Uploaded?}|
-    F -->|Yes| G[Save Image URL]|
-    F -->|No| H[Continue Without Image]|
+    D -->|Valid| F{Category Image Uploaded?}
+    F -->|Yes| G[Save Image URL]
+    F -->|No| H[Continue Without Image]
     G --> I[Check Category Name Exists]
     H --> I
     I -->|Exists| J[Return 400 - Category Already Exists]
@@ -702,9 +702,9 @@ flowchart TD
     F -->|Found| H{Category Image Uploaded?}
     H -->|Yes| I[Save Image URL]
     H -->|No| J[Continue Without Image]
-    I --> K[Check Name Exists in Category]|
+    I --> K[Check Name Exists in Category]
     J --> K
-    K -->|Exists| L[Return 400 - Category Already Exists]|
+    K -->|Exists| L[Return 400 - Category Already Exists]
     K -->|Not Exists| M[Update Category]
     M --> N[Return 200 - Category Updated]
 ```
@@ -772,12 +772,12 @@ flowchart TD
     B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
     B -->|Admin Auth| D[Validate Input]
     D -->|Invalid| E[Return 400 - Validation Error]
-    D -->|Valid| F{Subcategory Image Uploaded?}|
+    D -->|Valid| F{Subcategory Image Uploaded?}
     F -->|Yes| G[Save Image URL]
     F -->|No| H[Continue Without Image]
-    G --> I[Check Name Exists in Category]|
+    G --> I[Check Name Exists in Category]
     H --> I
-    I -->|Exists| J[Return 400 - Subcategory Already Exists]|
+    I -->|Exists| J[Return 400 - Subcategory Already Exists]
     I -->|Not Exists| K[Create Subcategory]
     K --> L[Return 200 - Subcategory Created]
 ```
@@ -797,9 +797,9 @@ flowchart TD
     F -->|Found| H{Subcategory Image Uploaded?}
     H -->|Yes| I[Save Image URL]
     H -->|No| J[Continue Without Image]
-    I --> K[Check Name Exists in Category]|
+    I --> K[Check Name Exists in Category]
     J --> K
-    K -->|Exists| L[Return 400 - Subcategory Already Exists]|
+    K -->|Exists| L[Return 400 - Subcategory Already Exists]
     K -->|Not Exists| M[Update Subcategory]
     M --> N[Return 200 - Subcategory Updated]
 ```
@@ -854,7 +854,7 @@ flowchart TD
     B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
     B -->|Admin Auth| D[Validate Input]
     D -->|Invalid| E[Return 400 - Validation Error]
-    D -->|Valid| F{Product Image Uploaded?}|
+    D -->|Valid| F{Product Image Uploaded?}
     F -->|Yes| G[Save Image URL]
     F -->|No| H[Continue Without Image]
     G --> I[Check Product Name Exists]
@@ -879,9 +879,9 @@ flowchart TD
     F -->|Found| H{Product Image Uploaded?}
     H -->|Yes| I[Save Image URL]
     H -->|No| J[Continue Without Image]
-    I --> K[Check Name Exists in Category]|
+    I --> K[Check Name Exists in Category]
     J --> K
-    K -->|Exists| L[Return 400 - Product Already Exists]|
+    K -->|Exists| L[Return 400 - Product Already Exists]
     K -->|Not Exists| M[Update Product]
     M --> N[Return 200 - Product Updated]
 ```
@@ -954,7 +954,7 @@ flowchart TD
     B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
     B -->|Admin Auth| D[Validate Input]
     D -->|Invalid| E[Return 400 - Validation Error]
-    D -->|Valid| F{Coupon Code Exists?}|
+    D -->|Valid| F{Coupon Code Exists?}
     F -->|Exists| G[Return 400 - Coupon Already Exists]
     F -->|Not Exists| H{Expiry Date Valid?}
     H -->|Invalid| I[Return 400 - Expiry Date Must Be Future]
@@ -1059,8 +1059,8 @@ flowchart TD
     F -->|Empty Cart| G[Return 400 - Cart Empty]
     F -->|Has Items| H[Validate Each Item]
     H --> I{All Items Valid?}
-    H -->|No| J[Return 400 - Invalid Cart Items]
-    H -->|Yes| K{Coupon Code Provided?}
+    I -->|No| J[Return 400 - Invalid Cart Items]
+    I -->|Yes| K{Coupon Code Provided?}
     K -->|Yes| L[Validate Coupon]
     K -->|No| M[Calculate Total Without Discount]
     L -->|Invalid| N[Return 400 - Invalid Coupon]
@@ -1068,8 +1068,8 @@ flowchart TD
     O --> P[Calculate Final Total]
     M --> P
     P --> Q{Payment Method Valid?}
-    P -->|No| R[Return 400 - Invalid Payment Method]
-    P -->|Yes| S[Check Stock Availability]
+    Q -->|No| R[Return 400 - Invalid Payment Method]
+    Q -->|Yes| S[Check Stock Availability]
     S -->|Insufficient| T[Return 400 - Insufficient Stock]
     S -->|Available| U[Create Order]
     U --> V[Update Product Stock]
@@ -1225,9 +1225,9 @@ flowchart TD
     D -->|Invalid| E[Return 400 - Validation Error]
     D -->|Valid| F[Find Staff by ID]
     F -->|Not Found| G[Return 404 - Staff Not Found]
-    F -->|Found| H{Amount Valid?}|
-    H -->|No| I[Return 400 - Invalid Amount]|
-    H -->|Yes| J[Create Deduction Record]|
+    F -->|Found| H{Amount Valid?}
+    H -->|No| I[Return 400 - Invalid Amount]
+    H -->|Yes| J[Create Deduction Record]
     J --> K[Return 200 - Deduction Added]
 ```
 
