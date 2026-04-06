@@ -282,12 +282,212 @@ The complete flowcharts are available in the `flowcharts/` directory:
 
 ### How to View Flowcharts
 
-The flowcharts are written in Mermaid syntax and can be viewed using:
+These flowcharts are written in Mermaid syntax and can be viewed using:
 
 - **GitHub/GitLab**: Automatic Mermaid rendering
 - **VS Code**: Install Mermaid Preview extension
 - **Online**: Use [mermaid.live](https://mermaid.live) or [Mermaid.js](https://mermaid-js.github.io)
 - **Markdown Editors**: Most modern editors support Mermaid
+
+## 🖼️ Flowchart Images
+
+In addition to the Mermaid diagrams above, the project includes visual flowchart images for each API endpoint. These images are located in the `flowcharts/images/` directory and provide a visual representation of each API flow.
+
+### 🔐 Authentication API Images
+
+| API Endpoint                                | Flowchart Image                                                                            |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| POST /api/v1/auth/signup                    | ![Signup API](flowcharts/images/auth/signup-api.png)                                       |
+| POST /api/v1/auth/login                     | ![Login API](flowcharts/images/auth/login-api.png)                                         |
+| GET /api/v1/auth/verify-email/:token        | ![Verify Email API](flowcharts/images/auth/verify-email-api.png)                           |
+| POST /api/v1/auth/resend-verification       | ![Resend Verification API](flowcharts/images/auth/resend-verification-api.png)             |
+| POST /api/v1/auth/forget-password           | ![Forget Password API](flowcharts/images/auth/forget-password-api.png)                     |
+| POST /api/v1/auth/reset-password            | ![Reset Password API](flowcharts/images/auth/reset-password-api.png)                       |
+| POST /api/v1/auth/generate-new-access-token | ![Generate New Access Token API](flowcharts/images/auth/generate-new-access-token-api.png) |
+| Refresh Token Flow                          | ![Refresh Token API](flowcharts/images/auth/refresh-token-api.png)                         |
+
+### 🛒 Shopping Cart API Images
+
+| API Endpoint                   | Flowchart Image                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| POST /api/v1/cart              | ![Add to Cart API](flowcharts/images/cart/add-to-cart-api.png)                   |
+| POST /api/v1/cart (Add Item)   | ![Add Item to Cart API](flowcharts/images/cart/add-item-to-cart-api.png)         |
+| PUT /api/v1/cart/:productId    | ![Update Cart Quantity API](flowcharts/images/cart/update-cart-quantity-api.png) |
+| GET /api/v1/cart               | ![View Cart API](flowcharts/images/cart/view-cart-api.png)                       |
+| DELETE /api/v1/cart/:productId | ![Remove Cart Item API](flowcharts/images/cart/remove-cart-item-api.png)         |
+| DELETE /api/v1/cart            | ![Clear Cart API](flowcharts/images/cart/clear-cart-api.png)                     |
+
+### 📂 Category API Images
+
+| API Endpoint                     | Flowchart Image                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| POST /api/v1/categories          | ![Create Category API](flowcharts/images/category/create-category-api.png)                     |
+| PUT /api/v1/categories/:id       | ![Update Category API](flowcharts/images/category/update-category-api.png)                     |
+| DELETE /api/v1/categories/:id    | ![Delete Category API](flowcharts/images/category/delete-category-api.png)                     |
+| GET /api/v1/categories/admin     | ![Get Categories Admin API](flowcharts/images/category/get-categories-admin-api.png)           |
+| GET /api/v1/categories           | ![Get Categories Public API](flowcharts/images/category/get-categories-public-api.png)         |
+| GET /api/v1/categories/:id/admin | ![Get Single Category Admin API](flowcharts/images/category/get-single-category-admin-api.png) |
+
+### 🎫 Coupon API Images
+
+| API Endpoint                  | Flowchart Image                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------ |
+| POST /api/v1/coupons/admin    | ![Add Coupon API](flowcharts/images/coupon/add-coupon-api.png)                       |
+| GET /api/v1/coupons/admin     | ![Get All Coupons Admin API](flowcharts/images/coupon/get-all-coupons-admin-api.png) |
+| GET /api/v1/coupons/admin/:id | ![Get One Coupon Admin API](flowcharts/images/coupon/get-one-coupon-admin-api.png)   |
+| PUT /api/v1/coupons/admin     | ![Update Coupon API](flowcharts/images/coupon/update-coupon-api.png)                 |
+| DELETE /api/v1/coupons/admin  | ![Delete Coupon API](flowcharts/images/coupon/delete-coupon-api.png)                 |
+| GET /api/v1/coupons           | ![Get All Coupons User API](flowcharts/images/coupon/get-all-coupons-user-api.png)   |
+| GET /api/v1/coupons/:id       | ![Get One Coupon User API](flowcharts/images/coupon/get-one-coupon-user-api.png)     |
+
+### 📋 Order API Images
+
+| API Endpoint            | Flowchart Image                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| POST /checkout          | ![Create Order API](flowcharts/images/orders/create-order-api.png)                           |
+| GET /                   | ![Get User Orders API](flowcharts/images/orders/get-user-orders-api.png)                     |
+| GET /:id                | ![Get Single Order API](flowcharts/images/orders/get-single-order-api.png)                   |
+| GET /admin              | ![Get All Orders Admin API](flowcharts/images/orders/get-all-orders-admin-api.png)           |
+| PATCH /admin/:id/status | ![Update Order Status Admin API](flowcharts/images/orders/update-order-status-admin-api.png) |
+| Order Security Checks   | ![Order Security Checks](flowcharts/images/orders/order-security-checks.png)                 |
+| Order Status Flow       | ![Order Status Flow](flowcharts/images/orders/order-status-flow.png)                         |
+| Payment Methods Flow    | ![Payment Methods Flow](flowcharts/images/orders/payment-methods-flow.png)                   |
+
+### 📦 Product API Images
+
+| API Endpoint                  | Flowchart Image                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| POST /api/v1/products         | ![Create Product API](flowcharts/images/product/create-product-api.png)           |
+| PUT /api/v1/products/:id      | ![Update Product API](flowcharts/images/product/update-product-api.png)           |
+| DELETE /api/v1/products/:id   | ![Delete Product API](flowcharts/images/product/delete-product-api.png)           |
+| GET /api/v1/products/admin    | ![Get Products Admin API](flowcharts/images/product/get-products-admin-api.png)   |
+| GET /api/v1/products          | ![Get Products API](flowcharts/images/product/get-products-api.png)               |
+| GET /api/v1/products (Public) | ![Get Products Public API](flowcharts/images/product/get-products-public-api.png) |
+| GET /api/v1/products/:id      | ![Get Single Product API](flowcharts/images/product/get-single-product-api.png)   |
+
+### 👥 Staff API Images
+
+| API Endpoint                                           | Flowchart Image                                                                   |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| GET /api/v1/staff/admin                                | ![Get All Staff API](flowcharts/images/staff/get-all-staff-api.png)               |
+| POST /api/v1/staff/admin                               | ![Add Staff API](flowcharts/images/staff/add-staff-api.png)                       |
+| GET /api/v1/staff/admin/:id                            | ![Get Staff Details API](flowcharts/images/staff/get-staff-details-api.png)       |
+| PUT /api/v1/staff/admin/:id                            | ![Update Staff API](flowcharts/images/staff/update-staff-api.png)                 |
+| DELETE /api/v1/staff/admin/:id                         | ![Delete Staff API](flowcharts/images/staff/delete-staff-api.png)                 |
+| POST /api/v1/staff/check-in                            | ![Staff Check-in API](flowcharts/images/staff/check-in-api.png)                   |
+| POST /api/v1/staff/check-out                           | ![Staff Check-out API](flowcharts/images/staff/check-out-api.png)                 |
+| POST /api/v1/staff/admin/:id/deductions                | ![Add Deduction API](flowcharts/images/staff/add-deduction-api.png)               |
+| GET /api/v1/staff/admin/:id/deductions                 | ![Get Staff Deductions API](flowcharts/images/staff/get-staff-deductions-api.png) |
+| PUT /api/v1/staff/admin/:id/deductions/:deductionId    | ![Update Deduction API](flowcharts/images/staff/update-deduction-api.png)         |
+| DELETE /api/v1/staff/admin/:id/deductions/:deductionId | ![Remove Deduction API](flowcharts/images/staff/remove-deduction-api.png)         |
+
+### 🏷️ Subcategory API Images
+
+| API Endpoint                     | Flowchart Image                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| POST /api/v1/subcategories       | ![Create Subcategory API](flowcharts/images/subcategory/create-subcategory-api.png)                   |
+| PUT /api/v1/subcategories/:id    | ![Update Subcategory API](flowcharts/images/subcategory/update-subcategory-api.png)                   |
+| DELETE /api/v1/subcategories/:id | ![Delete Subcategory API](flowcharts/images/subcategory/delete-subcategory-api.png)                   |
+| GET /api/v1/subcategories/admin  | ![Get All Subcategories Admin API](flowcharts/images/subcategory/get-all-subcategories-admin-api.png) |
+| GET /api/v1/subcategories/:id    | ![Get Single Subcategory API](flowcharts/images/subcategory/get-single-subcategory-api.png)           |
+
+### 👤 User API Images
+
+| API Endpoint                            | Flowchart Image                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------- |
+| GET /api/v1/users/profile               | ![Get User Profile API](flowcharts/images/user/get-user-profile-api.png)         |
+| PUT /api/v1/users/profile               | ![Update User Profile API](flowcharts/images/user/update-user-profile-api.png)   |
+| DELETE /api/v1/users/profile            | ![Delete User Profile API](flowcharts/images/user/delete-user-profile-api.png)   |
+| POST /api/v1/users/upload-profile-image | ![Upload Profile Image API](flowcharts/images/user/upload-profile-image-api.png) |
+
+## 📁 Flowchart Directory Structure
+
+```
+flowcharts/
+├── images/
+│   ├── auth/                    # Authentication flowcharts
+│   │   ├── signup-api.png
+│   │   ├── login-api.png
+│   │   ├── verify-email-api.png
+│   │   ├── resend-verification-api.png
+│   │   ├── forget-password-api.png
+│   │   ├── reset-password-api.png
+│   │   ├── generate-new-access-token-api.png
+│   │   └── refresh-token-api.png
+│   ├── cart/                    # Shopping cart flowcharts
+│   │   ├── add-to-cart-api.png
+│   │   ├── add-item-to-cart-api.png
+│   │   ├── update-cart-quantity-api.png
+│   │   ├── view-cart-api.png
+│   │   ├── remove-cart-item-api.png
+│   │   └── clear-cart-api.png
+│   ├── category/                # Category management flowcharts
+│   │   ├── create-category-api.png
+│   │   ├── update-category-api.png
+│   │   ├── delete-category-api.png
+│   │   ├── get-categories-admin-api.png
+│   │   ├── get-categories-public-api.png
+│   │   └── get-single-category-admin-api.png
+│   ├── coupon/                  # Coupon management flowcharts
+│   │   ├── add-coupon-api.png
+│   │   ├── get-all-coupons-admin-api.png
+│   │   ├── get-one-coupon-admin-api.png
+│   │   ├── update-coupon-api.png
+│   │   ├── delete-coupon-api.png
+│   │   ├── get-all-coupons-user-api.png
+│   │   └── get-one-coupon-user-api.png
+│   ├── orders/                  # Order management flowcharts
+│   │   ├── create-order-api.png
+│   │   ├── get-user-orders-api.png
+│   │   ├── get-single-order-api.png
+│   │   ├── get-all-orders-admin-api.png
+│   │   ├── update-order-status-admin-api.png
+│   │   ├── order-security-checks.png
+│   │   ├── order-status-flow.png
+│   │   └── payment-methods-flow.png
+│   ├── product/                 # Product management flowcharts
+│   │   ├── create-product-api.png
+│   │   ├── update-product-api.png
+│   │   ├── delete-product-api.png
+│   │   ├── get-products-admin-api.png
+│   │   ├── get-products-api.png
+│   │   ├── get-products-public-api.png
+│   │   └── get-single-product-api.png
+│   ├── staff/                   # Staff management flowcharts
+│   │   ├── get-all-staff-api.png
+│   │   ├── add-staff-api.png
+│   │   ├── get-staff-details-api.png
+│   │   ├── update-staff-api.png
+│   │   ├── delete-staff-api.png
+│   │   ├── check-in-api.png
+│   │   ├── check-out-api.png
+│   │   ├── add-deduction-api.png
+│   │   ├── get-staff-deductions-api.png
+│   │   ├── update-deduction-api.png
+│   │   └── remove-deduction-api.png
+│   ├── subcategory/             # Subcategory management flowcharts
+│   │   ├── create-subcategory-api.png
+│   │   ├── update-subcategory-api.png
+│   │   ├── delete-subcategory-api.png
+│   │   ├── get-all-subcategories-admin-api.png
+│   │   └── get-single-subcategory-api.png
+│   └── user/                    # User management flowcharts
+│       ├── get-user-profile-api.png
+│       ├── update-user-profile-api.png
+│       ├── delete-user-profile-api.png
+│       └── upload-profile-image-api.png
+└── README.md                    # This documentation
+```
+
+## 🎯 How to Use Flowcharts
+
+1. **For Development**: Use the Mermaid diagrams to understand API logic during development
+2. **For Documentation**: The images provide visual representations for documentation
+3. **For Testing**: Use flowcharts to understand test scenarios and edge cases
+4. **For Onboarding**: New developers can quickly understand the API structure
+5. **For Troubleshooting**: Visualize the flow to identify where issues might occur
+
+Each flowchart image corresponds to a specific API endpoint and shows the complete flow from request to response, including all validation steps, error handling, and business logic.
 
 ### Flowchart Legend
 
