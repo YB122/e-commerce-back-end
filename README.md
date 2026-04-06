@@ -55,22 +55,9 @@ A comprehensive Node.js and Express.js backend API for an e-commerce platform wi
    cp config/.env.example config/.env
    ```
 
-   Update the following variables in `config/.env`:
+ 
 
-   ```env
-   PORT = 3000
-   EMAIL = your-email@gmail.com
-   PASSWORD = your-app-password
-   HASH = 12
-   BASE_URL = http://localhost:3000
-   SIGNATURE_ADMIN = signatureAdmin
-   SIGNATURE_USER = signatureUser
-   SIGNATURE_STAFF = signatureStaff
-   ACCESS_TOKEN = 1d
-   REFRESH_TOKEN = 1y
-   DATA_BASE_URL_MY = mongodb://localhost:27017/e-commerce-nti
-   VERIFY_SIGNATURE_MY = my
-   ```
+
 
 4. **Start MongoDB**
 
@@ -1410,23 +1397,7 @@ The application uses MongoDB with the following main collections:
 - **orders**: Order records
 - **staff**: Staff management
 - **coupons**: Discount codes
-
-### Environment Variables
-
-| Variable            | Description                  | Default                                  |
-| ------------------- | ---------------------------- | ---------------------------------------- |
-| PORT                | Server port                  | 3000                                     |
-| EMAIL               | SMTP email address           | -                                        |
-| PASSWORD            | SMTP app password            | -                                        |
-| HASH                | bcrypt salt rounds           | 12                                       |
-| BASE_URL            | Application base URL         | http://localhost:3000                    |
-| SIGNATURE_ADMIN     | Admin JWT signature          | signatureAdmin                           |
-| SIGNATURE_USER      | User JWT signature           | signatureUser                            |
-| SIGNATURE_STAFF     | Staff JWT signature          | signatureStaff                           |
-| ACCESS_TOKEN        | Access token expiry          | 1d                                       |
-| REFRESH_TOKEN       | Refresh token expiry         | 1y                                       |
-| DATA_BASE_URL_MY    | MongoDB connection string    | mongodb://localhost:27017/e-commerce-nti |
-| VERIFY_SIGNATURE_MY | Email verification signature | my                                       |
+                                   
 
 ## 🚀 Deployment
 
