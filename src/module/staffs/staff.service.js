@@ -57,13 +57,11 @@ export const updateStaff = async (req, res) => {
       const { id } = req.params;
       const { userId, dailySalary, joinDate, department, monthlyReports } = req.body;
 
-      // Check if staff exists
       const existingStaff = await staffModel.findById(id);
       if (!existingStaff) {
         return res.status(404).json({ message: "Staff not found" });
       }
 
-      // Handle monthlyReports updates
       if (monthlyReports) {
         const report = monthlyReports;
         const existingReportIndex = existingStaff.monthlyReports.findIndex(
@@ -71,18 +69,15 @@ export const updateStaff = async (req, res) => {
         );
 
         if (existingReportIndex != -1) {
-          // Update existing month report
           existingStaff.monthlyReports[existingReportIndex] = {
             ...existingStaff.monthlyReports[existingReportIndex],
             ...report
           };
         } else {
-          // Add new month report
           existingStaff.monthlyReports.push(report);
         }
       }
 
-      // Update basic staff fields
       const updateFields = {};
       if (userId) updateFields.userId = userId;
       if (dailySalary) updateFields.dailySalary = dailySalary;

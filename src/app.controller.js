@@ -25,7 +25,7 @@ export const callServer = () => {
   app.use("/api/v1/cart", cartRouter);
   app.use("/api/v1/orders", orderRouter);
   app.use("/api/v1/staff", staffRouter);
-  // Global error handler
+ 
   app.use((err, req, res, next) => {
     console.error(err);
     res

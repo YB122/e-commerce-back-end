@@ -11,14 +11,12 @@ export const addItemToCart = async (req, res) => {
       if (productFound?.isActiveAdmin && productFound?.isActiveUser) {
         if (!quantity) quantity = 1;
         if (productFound.stock >= +quantity) {
-          // Check if product already exists in cart
           let existingCartItem = await cartModel.findOne({
             userId: req.user._id,
             productId,
           });
 
           if (existingCartItem) {
-            // Update existing cart item quantity
             let newQuantity = existingCartItem.quantity + +quantity;
             if (productFound.stock >= newQuantity) {
               let updatedItem = await cartModel.findByIdAndUpdate(
@@ -37,7 +35,6 @@ export const addItemToCart = async (req, res) => {
                 .json({ message: "we haven't that quantity of this product" });
             }
           } else {
-            // Add new item to cart
             let addItem = await cartModel.insertMany({
               userId: req.user._id,
               productId,
@@ -123,7 +120,6 @@ export const viewCart = async (req, res) => {
     if (userFound?.isActive) {
       let cartItems = await cartModel.find({ userId: req.user._id });
       if (cartItems.length) {
-        // Check if products are active and remove inactive ones
         const inactiveCartItems = [];
 
         for (const cartItem of cartItems) {
@@ -133,13 +129,11 @@ export const viewCart = async (req, res) => {
           }
         }
 
-        // Remove inactive products from cart
         if (inactiveCartItems.length > 0) {
           const deleteResult = await cartModel.deleteMany({
             _id: { $in: inactiveCartItems },
           });
           if (deleteResult.deletedCount > 0) {
-            // Get updated cart items
             cartItems = await cartModel.find({ userId: req.user._id });
             if (cartItems.length == 0) {
               return res.status(404).json({

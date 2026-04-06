@@ -139,7 +139,7 @@ The API uses JWT-based authentication with three user roles:
 
 This project includes comprehensive API flowcharts in the `flowcharts/` directory. Each flowchart visually represents the API logic, including validation, business rules, error handling, and success paths.
 
-### Authentication Flowcharts
+### 🔐 Authentication Flowcharts
 
 #### User Registration Flow
 

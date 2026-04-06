@@ -38,7 +38,6 @@ export const addOrder = async (req, res) => {
         return res.status(404).json({ message: "no selected items found in cart" });
       }
 
-      // Validation: Ensure all requested productIds are actually in user's cart
       let cartProductIds = cartItems.map(item => item.productId);
       let missingProducts = productIds.filter(id => !cartProductIds.includes(id));
       if (missingProducts.length > 0) {
@@ -63,7 +62,6 @@ export const addOrder = async (req, res) => {
           return res.status(400).json({ message: `product ${product.name} has insufficient stock` });
         }
 
-        // Price validation: Ensure cart price matches current product price
         if (cartItem.price !== product.price) {
           return res.status(400).json({
             message: `price changed for product ${product.name}. Cart price: ${cartItem.price}, Current price: ${product.price}`
@@ -93,7 +91,6 @@ export const addOrder = async (req, res) => {
       });
 
       if (newOrder) {
-        // Update stock FIRST, then delete cart items
         let stockUpdateErrors = [];
 
         for (let item of orderItems) {
@@ -111,7 +108,6 @@ export const addOrder = async (req, res) => {
         }
 
         if (stockUpdateErrors.length > 0) {
-          // Rollback: Delete the created order since stock update failed
           await orderModel.findByIdAndDelete(newOrder._id);
           return res.status(500).json({
             message: "stock update failed",
@@ -119,7 +115,6 @@ export const addOrder = async (req, res) => {
           });
         }
 
-        // Only delete cart items AFTER successful stock update
         let cartProductIds = cartItems.map(item => item.productId);
         await cartModel.deleteMany({
           userId: req.user._id,
@@ -144,17 +139,14 @@ export const getMyOrders = async (req, res) => {
     if (userFound?.isActive) {
       let { page = 1, limit = 0, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
-      // Convert to numbers
       page = +page;
       limit = +limit;
 
-      // Build query
       let query = { userId: req.user._id };
       let sortOptions = { [sortBy]: sortOrder == 'desc' ? -1 : 1 };
 
       let ordersQuery = orderModel.find(query).sort(sortOptions);
 
-      // Apply pagination if limit > 0
       if (limit > 0) {
         const skip = (page - 1) * limit;
         ordersQuery = ordersQuery.skip(skip).limit(limit);
@@ -189,7 +181,6 @@ export const getMyOrder = async (req, res) => {
         return res.status(404).json({ message: "no order found" });
       }
 
-      // Security check: Ensure order belongs to the authenticated user
       if (order.userId != req.user._id) {
         return res.status(403).json({ message: "access denied: this order doesn't belong to you" });
       }
@@ -207,17 +198,14 @@ export const getAllOrders = async (req, res) => {
   if (req.user && req.bearer == "admin") {
     let { page = 1, limit = 0, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
-    // Convert to numbers
     page = +page;
     limit = +limit;
 
-    // Build query and sort
     let query = {};
     let sortOptions = { [sortBy]: sortOrder == 'desc' ? -1 : 1 };
 
     let ordersQuery = orderModel.find(query).sort(sortOptions);
 
-    // Apply pagination if limit > 0
     if (limit > 0) {
       const skip = (page - 1) * limit;
       ordersQuery = ordersQuery.skip(skip).limit(limit);

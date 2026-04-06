@@ -1,8 +1,6 @@
 import joi from "joi";
 
-// Password: min 8 chars, at least 1 uppercase letter and 1 number
 const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-// Egyptian phone numbers: optional +20 or leading 0, then 1 followed by 0,1,2 or 5 and 8 more digits
 const PHONE_REGEX = /^(?:\+20|0)?1[0125]\d{8}$/;
 
 export const signupValidate = joi.object({
