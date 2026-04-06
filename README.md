@@ -489,6 +489,781 @@ flowcharts/
 
 Each flowchart image corresponds to a specific API endpoint and shows the complete flow from request to response, including all validation steps, error handling, and business logic.
 
+### 👤 User Management Flowcharts
+
+#### 1. Get User Profile (GET /api/v1/users/profile)
+
+**Description**: Retrieves authenticated user's profile information.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Return User Profile Data]
+```
+
+#### 2. Update User Profile (PUT /api/v1/users/profile)
+
+**Description**: Updates authenticated user's profile information with optional avatar upload.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find User by ID]
+    F -->|Not Found/Inactive| G[Return 404 - User Not Found]
+    F -->|Found| H{Avatar Uploaded?}
+    H -->|Yes| I[Save New Avatar URL]
+    H -->|No| J[Keep Existing Avatar]
+    I --> K[Update User Profile]
+    J --> K
+    K --> L[Return 200 - Profile Updated]
+```
+
+#### 3. Upload Profile Image (POST /api/v1/users/upload-profile-image)
+
+**Description**: Uploads and updates user's profile image.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F{Image File Provided?}
+    F -->|No| G[Return 400 - No Image File]
+    F -->|Yes| H[Validate Image Type]
+    H -->|Invalid| I[Return 400 - Invalid Image Type]
+    H -->|Valid| J[Upload Image]
+    J --> K[Update User Avatar URL]
+    K --> L[Return 200 - Image Uploaded]
+```
+
+#### 4. Soft Delete User (DELETE /api/v1/users/profile)
+
+**Description**: Soft deletes user account (sets inactive status).
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Set User Inactive]
+    F --> G[Return 200 - Account Deleted]
+```
+
+### 🛒 Shopping Cart Flowcharts
+
+#### 1. Add Item to Cart (POST /api/v1/cart)
+
+**Description**: Adds product to user's cart with stock validation and quantity management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Find Product by ID]
+    F -->|Not Found/Inactive| G[Return 404 - Product Not Found]
+    F -->|Found| H{Quantity Provided?}
+    H -->|No| I[Set Quantity = 1]
+    H -->|Yes| J[Use Provided Quantity]
+    I --> K{Stock Available?}
+    J --> K
+    K -->|Insufficient| L[Return 404 - Insufficient Stock]
+    K -->|Available| M[Check if Item Already in Cart]
+    M -->|Exists| N[Update Quantity]
+    M -->|Not Exists| O[Add New Cart Item]
+    N --> P{New Total Stock OK?}
+    P -->|Insufficient| Q[Return 404 - Insufficient Stock]
+    P -->|Available| R[Update Cart Item]
+    R --> S[Return 200 - Cart Updated]
+    O --> T[Create Cart Item]
+    T --> U[Return 200 - Item Added]
+```
+
+#### 2. Update Cart Quantity (PUT /api/v1/cart/:productId)
+
+**Description**: Updates quantity of existing item in cart.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Find Product by ID]
+    F -->|Not Found/Inactive| G[Return 404 - Product Not Found]
+    F -->|Found| H[Find Cart Item]
+    H -->|Not Found| I[Return 404 - Item Not in Cart]
+    H -->|Found| J{Quantity Valid?}
+    J -->|Invalid| K[Return 400 - Quantity Must Be >= 1]
+    J -->|Valid| L{Stock Available?}
+    L -->|Insufficient| M[Return 404 - Insufficient Stock]
+    L -->|Available| N[Update Cart Item Quantity]
+    N --> O[Return 200 - Quantity Updated]
+```
+
+#### 3. View Cart (GET /api/v1/cart)
+
+**Description**: Retrieves user's cart with product details and cleanup of inactive items.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Get User Cart Items]
+    F -->|Empty Cart| G[Return 404 - Cart Empty]
+    F -->|Has Items| H[Check Each Item's Product Status]
+    H --> I{Inactive Products Found?}
+    I -->|Yes| J[Remove Inactive Items]
+    J --> K{Cart Now Empty?}
+    K -->|Yes| L[Return 404 - Cart Empty After Cleanup]
+    K -->|No| M[Return 200 - Updated Cart]
+    I -->|No| N[Return 200 - Cart Data]
+```
+
+#### 4. Remove Cart Item (DELETE /api/v1/cart/:productId)
+
+**Description**: Removes specific item from user's cart.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Find Product by ID]
+    F -->|Not Found/Inactive| G[Return 404 - Product Not Found]
+    F -->|Found| H[Find Cart Item]
+    H -->|Not Found| I[Return 404 - Item Not in Cart]
+    H -->|Found| J[Delete Cart Item]
+    J --> K[Return 200 - Item Removed]
+```
+
+#### 5. Clear Cart (DELETE /api/v1/cart)
+
+**Description**: Removes all items from user's cart.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Delete All User Cart Items]
+    F --> G{Items Deleted?}
+    G -->|Yes| H[Return 200 - Cart Cleared]
+    G -->|No| I[Return 404 - Cart Already Empty]
+```
+
+### 📂 Category Management Flowcharts
+
+#### 1. Create Category (POST /api/v1/categories) - Admin Only
+
+**Description**: Creates new product category with optional image upload.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F{Category Image Uploaded?}
+    F -->|Yes| G[Save Image URL]
+    F -->|No| H[Continue Without Image]
+    G --> I[Check Category Name Exists]
+    H --> I
+    I -->|Exists| J[Return 400 - Category Already Exists]
+    I -->|Not Exists| K[Create Category]
+    K --> L[Return 200 - Category Created]
+```
+
+#### 2. Update Category (PUT /api/v1/categories/:id) - Admin Only
+
+**Description**: Updates existing category with validation and optional image update.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Category by ID]
+    F -->|Not Found| G[Return 404 - Category Not Found]
+    F -->|Found| H{Category Image Uploaded?}
+    H -->|Yes| I[Save Image URL]
+    H -->|No| J[Continue Without Image]
+    I --> K{Name Provided?}
+    J --> K
+    K -->|Yes| L[Check Name Exists]
+    K -->|No| M[Update Category]
+    L -->|Exists| N[Return 400 - Category Already Exists]
+    L -->|Not Exists| M
+    M --> O[Return 200 - Category Updated]
+```
+
+#### 3. Delete Category (DELETE /api/v1/categories/:id) - Admin Only
+
+**Description**: Soft deletes category (sets inactive status).
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Find Category by ID]
+    D -->|Not Found| E[Return 404 - Category Not Found]
+    D -->|Found| F[Set Category Inactive]
+    F --> G[Return 200 - Category Deleted]
+```
+
+#### 4. Get Categories Admin (GET /api/v1/categories/admin) - Admin Only
+
+**Description**: Retrieves all categories for admin management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Get All Categories]
+    D -->|No Categories| E[Return 404 - No Categories Found]
+    D -->|Categories Found| F[Return Categories List]
+```
+
+#### 5. Get Single Category Admin (GET /api/v1/categories/:id/admin) - Admin Only
+
+**Description**: Retrieves specific category details for admin.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Find Category by ID]
+    D -->|Not Found| E[Return 404 - Category Not Found]
+    D -->|Found| F[Return Category Details]
+```
+
+#### 6. Get Categories Public (GET /api/v1/categories) - Public
+
+**Description**: Retrieves all active categories for public viewing.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Find All Active Categories]
+    B -->|No Categories| C[Return 404 - No Categories Found]
+    B -->|Categories Found| D[Return Categories List]
+```
+
+### 🏷️ Subcategory Management Flowcharts
+
+#### 1. Create Subcategory (POST /api/v1/subcategories) - Admin Only
+
+**Description**: Creates new subcategory linked to a parent category.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Parent Category]
+    F -->|Not Found/Inactive| G[Return 404 - Category Not Found]
+    F -->|Found| H{Subcategory Image Uploaded?}
+    H -->|Yes| I[Save Image URL]
+    H -->|No| J[Continue Without Image]
+    I --> K[Check Name Exists in Category]
+    J --> K
+    K -->|Exists| L[Return 400 - Subcategory Already Exists]
+    K -->|Not Exists| M[Create Subcategory]
+    M --> N[Return 200 - Subcategory Created]
+```
+
+#### 2. Update Subcategory (PUT /api/v1/subcategories/:id) - Admin Only
+
+**Description**: Updates existing subcategory with validation.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Subcategory by ID]
+    F -->|Not Found| G[Return 404 - Subcategory Not Found]
+    F -->|Found| H[Find Parent Category]
+    H -->|Not Found/Inactive| I[Return 404 - Category Not Found]
+    H -->|Found| J{Name Changed?}
+    J -->|Yes| K[Check New Name Exists]
+    J -->|No| L[Update Subcategory]
+    K -->|Exists| M[Return 400 - Subcategory Already Exists]
+    K -->|Not Exists| L
+    L --> N[Return 200 - Subcategory Updated]
+```
+
+#### 3. Delete Subcategory (DELETE /api/v1/subcategories/:id) - Admin Only
+
+**Description**: Soft deletes subcategory (sets inactive status).
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Find Subcategory by ID]
+    D -->|Not Found| E[Return 404 - Subcategory Not Found]
+    D -->|Found| F[Set Subcategory Inactive]
+    F --> G[Return 200 - Subcategory Deleted]
+```
+
+#### 4. Get All Subcategories Admin (GET /api/v1/subcategories/admin) - Admin Only
+
+**Description**: Retrieves all subcategories for admin management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Get All Subcategories]
+    D -->|No Subcategories| E[Return 404 - No Subcategories Found]
+    D -->|Subcategories Found| F[Return Subcategories List]
+```
+
+#### 5. Get Single Subcategory (GET /api/v1/subcategories/:id) - Public
+
+**Description**: Retrieves subcategory details for public viewing.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Find Subcategory by ID]
+    B -->|Not Found/Inactive| C[Return 404 - Subcategory Not Found]
+    B -->|Found| D[Return Subcategory Details]
+```
+
+### 📦 Product Management Flowcharts
+
+#### 1. Create Product (POST /api/v1/products) - Admin Only
+
+**Description**: Creates new product with comprehensive validation and stock management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Check Product Name Exists]
+    F -->|Exists| G[Return 400 - Product Already Exists]
+    F -->|Not Exists| H[Find Subcategory]
+    H -->|Not Found| I[Return 404 - Subcategory Not Found]
+    H -->|Found| J[Find Category]
+    J -->|Not Found| K[Return 404 - Category Not Found]
+    J -->|Found| L{Subcategory Belongs to Category?}
+    L -->|No| M[Return 404 - Subcategory Not for This Category]
+    L -->|Yes| N{Stock & Price Valid?}
+    N -->|Invalid| O[Return 400 - Stock and Price Must Be > 0]
+    N -->|Valid| P{Product Images Uploaded?}
+    P -->|Yes| Q[Save Image URLs]
+    P -->|No| R[Continue Without Images]
+    Q --> S[Create Product]
+    R --> S
+    S --> T[Return 200 - Product Created]
+```
+
+#### 2. Update Product (PUT /api/v1/products/:id) - Admin Only
+
+**Description**: Updates existing product with validation and relationship checks.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Product by ID]
+    F -->|Not Found| G[Return 404 - Product Not Found]
+    F -->|Found| H{Category Changed?}
+    H -->|Yes| I[Find New Category]
+    H -->|No| J{Subcategory Changed?}
+    I -->|Not Found| K[Return 404 - Category Not Found]
+    I -->|Found| L{Subcategory Changed?}
+    L -->|Yes| M[Find New Subcategory]
+    L -->|No| N{Name Changed?}
+    M -->|Not Found| O[Return 404 - Subcategory Not Found]
+    M -->|Found| P{Subcategory Belongs to Category?}
+    P -->|No| Q[Return 404 - Category Not for Subcategory]
+    P -->|Yes| R{Name Changed?}
+    J -->|Yes| S[Find New Subcategory]
+    J -->|No| N
+    S -->|Not Found| T[Return 404 - Subcategory Not Found]
+    S -->|Found| U{Subcategory Belongs to Category?}
+    U -->|No| V[Return 404 - Category Not for Subcategory]
+    U -->|Yes| N
+    N -->|Yes| W[Check New Name Exists]
+    N -->|No| X[Prepare Update Data]
+    W -->|Exists| Y[Return 400 - Product Already Exists]
+    W -->|Not Exists| X
+    X --> Z{Stock & Price Valid?}
+    Z -->|Invalid| AA[Return 400 - Stock and Price Must Be > 0]
+    Z -->|Valid| BB{Product Images Uploaded?}
+    BB -->|Yes| CC[Update Image URLs]
+    BB -->|No| DD[Keep Existing Images]
+    CC --> EE[Update Product]
+    DD --> EE
+    EE --> FF[Return 200 - Product Updated]
+```
+
+#### 3. Delete Product (DELETE /api/v1/products/:id) - Admin Only
+
+**Description**: Soft deletes product (sets inactive status).
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Find Product by ID]
+    D -->|Not Found| E[Return 404 - Product Not Found]
+    D -->|Found| F[Set Product Inactive]
+    F --> G[Return 200 - Product Deleted]
+```
+
+#### 4. Get Products Admin (GET /api/v1/products/admin) - Admin Only
+
+**Description**: Retrieves all products for admin management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Get All Products]
+    D -->|No Products| E[Return 404 - No Products Found]
+    D -->|Products Found| F[Return Products List]
+```
+
+#### 5. Get Products (GET /api/v1/products) - Public
+
+**Description**: Retrieves products with filtering, pagination, and search capabilities.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B{Filters Provided?}
+    B -->|Yes| C[Apply Filters: Category, Price, Search]
+    B -->|No| D[Get All Active Products]
+    C --> E[Apply Pagination]
+    D --> E
+    E --> F{Products Found?}
+    F -->|No| G[Return 404 - No Products Found]
+    F -->|Yes| H[Return Products with Pagination]
+```
+
+#### 6. Get Single Product (GET /api/v1/products/:id) - Public
+
+**Description**: Retrieves single product details with category and subcategory information.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Find Product by ID]
+    B -->|Not Found/Inactive| C[Return 404 - Product Not Found]
+    B -->|Found| D[Get Category Info]
+    D --> E[Get Subcategory Info]
+    E --> F[Return Product Details]
+```
+
+### 🎫 Coupon Management Flowcharts
+
+#### 1. Create Coupon (POST /api/v1/coupons/admin) - Admin Only
+
+**Description**: Creates new discount coupon with validation rules.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F{Coupon Code Exists?}
+    F -->|Exists| G[Return 400 - Coupon Already Exists]
+    F -->|Not Exists| H{Expiry Date Valid?}
+    H -->|Invalid| I[Return 400 - Expiry Date Must Be Future]
+    H -->|Valid| J{Discount Valid?}
+    J -->|Invalid| K[Return 400 - Invalid Discount Amount]
+    J -->|Valid| L[Create Coupon]
+    L --> M[Return 200 - Coupon Created]
+```
+
+#### 2. Update Coupon (PUT /api/v1/coupons/admin) - Admin Only
+
+**Description**: Updates existing coupon with validation.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Coupon by ID]
+    F -->|Not Found| G[Return 404 - Coupon Not Found]
+    F -->|Found| H{Code Changed?}
+    H -->|Yes| I[Check New Code Exists]
+    H -->|No| J{Expiry Date Valid?}
+    I -->|Exists| K[Return 400 - Coupon Already Exists]
+    I -->|Not Exists| J
+    J -->|Invalid| L[Return 400 - Expiry Date Must Be Future]
+    J -->|Valid| M{Discount Valid?}
+    M -->|Invalid| N[Return 400 - Invalid Discount Amount]
+    M -->|Valid| O[Update Coupon]
+    O --> P[Return 200 - Coupon Updated]
+```
+
+#### 3. Delete Coupon (DELETE /api/v1/coupons/admin) - Admin Only
+
+**Description**: Deactivates coupon (sets inactive status).
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Find Coupon by ID]
+    D -->|Not Found| E[Return 404 - Coupon Not Found]
+    D -->|Found| F[Set Coupon Inactive]
+    F --> G[Return 200 - Coupon Deactivated]
+```
+
+#### 4. Get All Coupons Admin (GET /api/v1/coupons/admin) - Admin Only
+
+**Description**: Retrieves all coupons for admin management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Get All Coupons]
+    D -->|No Coupons| E[Return 404 - No Coupons Found]
+    D -->|Coupons Found| F[Return Coupons List]
+```
+
+#### 5. Get Active Coupons (GET /api/v1/coupons) - User
+
+**Description**: Retrieves active coupons available for users.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Get Active Non-Expired Coupons]
+    D -->|No Coupons| E[Return 404 - No Available Coupons]
+    D -->|Coupons Found| F[Return Active Coupons]
+```
+
+#### 6. Get Single Coupon User (GET /api/v1/coupons/:id) - User
+
+**Description**: Retrieves specific coupon details for user.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find Coupon by ID]
+    D -->|Not Found| E[Return 404 - Coupon Not Found]
+    D -->|Found| F{Coupon Active & Not Expired?}
+    F -->|No| G[Return 404 - Coupon Not Available]
+    F -->|Yes| H[Return Coupon Details]
+```
+
+### 📋 Order Management Flowcharts
+
+#### 1. Create Order (POST /checkout) - User
+
+**Description**: Creates order from cart items with payment processing and stock validation.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Get User Cart Items]
+    F -->|Empty Cart| G[Return 400 - Cart Empty]
+    F -->|Has Items| H[Validate Each Item]
+    H --> I{All Items Valid?}
+    I -->|No| J[Return 400 - Invalid Cart Items]
+    I -->|Yes| K{Coupon Code Provided?}
+    K -->|Yes| L[Validate Coupon]
+    K -->|No| M[Calculate Total Without Discount]
+    L -->|Invalid| N[Return 400 - Invalid Coupon]
+    L -->|Valid| O[Apply Discount]
+    O --> P[Calculate Final Total]
+    M --> P
+    P --> Q{Payment Method Valid?}
+    Q -->|No| R[Return 400 - Invalid Payment Method]
+    Q -->|Yes| S[Check Stock Availability]
+    S -->|Insufficient| T[Return 400 - Insufficient Stock]
+    S -->|Available| U[Create Order]
+    U --> V[Update Product Stock]
+    V --> W[Clear User Cart]
+    W --> X[Return 200 - Order Created]
+```
+
+#### 2. Get User Orders (GET /) - User
+
+**Description**: Retrieves authenticated user's order history.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find User by ID]
+    D -->|Not Found/Inactive| E[Return 404 - User Not Found]
+    D -->|Found| F[Get User Orders]
+    F -->|No Orders| G[Return 404 - No Orders Found]
+    F -->|Orders Found| H[Return Orders List]
+```
+
+#### 3. Get Single Order (GET /:id) - User
+
+**Description**: Retrieves specific order details for user.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth| C[Return 401 - Login First]
+    B -->|Auth Valid| D[Find Order by ID]
+    D -->|Not Found| E[Return 404 - Order Not Found]
+    D -->|Found| F{Order Belongs to User?}
+    F -->|No| G[Return 403 - Access Denied]
+    F -->|Yes| H[Return Order Details]
+```
+
+#### 4. Get All Orders Admin (GET /admin) - Admin Only
+
+**Description**: Retrieves all orders for admin management.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Get All Orders]
+    D -->|No Orders| E[Return 404 - No Orders Found]
+    D -->|Orders Found| F[Return Orders List]
+```
+
+#### 5. Update Order Status (PATCH /admin/:id/status) - Admin Only
+
+**Description**: Updates order status with validation.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Order by ID]
+    F -->|Not Found| G[Return 404 - Order Not Found]
+    F -->|Found| H{Status Valid?}
+    H -->|No| I[Return 400 - Invalid Status]
+    H -->|Yes| J{Status Transition Valid?}
+    J -->|No| K[Return 400 - Invalid Status Transition]
+    J -->|Yes| L[Update Order Status]
+    L --> M[Return 200 - Status Updated]
+```
+
+### 👥 Staff Management Flowcharts
+
+#### 1. Add Staff (POST /api/v1/staff/admin) - Admin Only
+
+**Description**: Adds new staff member with role assignment.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F{Email Already Exists?}
+    F -->|Yes| G[Return 400 - Email Already Exists]
+    F -->|No| H[Hash Password]
+    H --> I[Create Staff Account]
+    I --> J[Return 200 - Staff Added]
+```
+
+#### 2. Update Staff (PUT /api/v1/staff/admin/:id) - Admin Only
+
+**Description**: Updates staff member information.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Staff by ID]
+    F -->|Not Found| G[Return 404 - Staff Not Found]
+    F -->|Found| H{Email Changed?}
+    H -->|Yes| I[Check New Email Exists]
+    H -->|No| J[Update Staff Info]
+    I -->|Exists| K[Return 400 - Email Already Exists]
+    I -->|Not Exists| J
+    J --> L[Return 200 - Staff Updated]
+```
+
+#### 3. Staff Check-in (POST /api/v1/staff/check-in) - Staff Only
+
+**Description**: Records staff attendance check-in.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Staff| C[Return 401 - Staff Only]
+    B -->|Staff Auth| D[Find Staff by ID]
+    D -->|Not Found/Inactive| E[Return 404 - Staff Not Found]
+    D -->|Found| F{Already Checked In Today?}
+    F -->|Yes| G[Return 400 - Already Checked In]
+    F -->|No| H[Create Check-in Record]
+    H --> I[Return 200 - Check-in Successful]
+```
+
+#### 4. Staff Check-out (POST /api/v1/staff/check-out) - Staff Only
+
+**Description**: Records staff attendance check-out.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Staff| C[Return 401 - Staff Only]
+    B -->|Staff Auth| D[Find Staff by ID]
+    D -->|Not Found/Inactive| E[Return 404 - Staff Not Found]
+    D -->|Found| F{Checked In Today?}
+    F -->|No| G[Return 400 - Not Checked In]
+    F -->|Yes| H{Already Checked Out?}
+    H -->|Yes| I[Return 400 - Already Checked Out]
+    H -->|No| J[Update Check-out Time]
+    J --> K[Return 200 - Check-out Successful]
+```
+
+#### 5. Add Staff Deduction (POST /api/v1/staff/admin/:id/deductions) - Admin Only
+
+**Description**: Adds salary deduction for staff member.
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Auth Middleware]
+    B -->|No Auth/Not Admin| C[Return 400 - Admin Only]
+    B -->|Admin Auth| D[Validate Input]
+    D -->|Invalid| E[Return 400 - Validation Error]
+    D -->|Valid| F[Find Staff by ID]
+    F -->|Not Found| G[Return 404 - Staff Not Found]
+    F -->|Found| H{Amount Valid?}
+    H -->|No| I[Return 400 - Invalid Amount]
+    H -->|Yes| J[Create Deduction Record]
+    J --> K[Return 200 - Deduction Added]
+```
+
 ### Flowchart Legend
 
 - **Rectangles**: Process/Action steps
